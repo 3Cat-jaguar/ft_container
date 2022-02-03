@@ -6,13 +6,18 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:47:27 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/03 12:47:47 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/03 12:56:08 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef ITERATORS_TRAITS_HPP
 # define ITERATORS_TRAITS_HPP
 
+namespace	ft
+{
+
+
+}
 
 #endif
 

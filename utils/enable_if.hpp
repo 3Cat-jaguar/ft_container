@@ -6,13 +6,18 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:48:38 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/03 12:49:13 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/03 12:55:28 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef ENABLE_IF_HPP
 # define ENABLE_IF_HPP
 
+namespace	ft
+{
 
+
+
+}
 
 #endif

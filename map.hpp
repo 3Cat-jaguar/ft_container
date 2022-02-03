@@ -6,13 +6,18 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:44:11 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/03 12:44:56 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/03 12:54:46 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MAP_HPP
 # define MAP_HPP
 
+namespace	ft
+{
 
+
+
+}
 
 #endif
