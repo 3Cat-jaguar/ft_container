@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:47:27 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/03 18:07:51 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/04 15:28:14 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,24 @@
 
 namespace	ft
 {
-	//random_access_iterator_tag 는 iterator 헤더에 있는 empty class 이다.
-	class	random_access_iterator_tag {};
+	//iterator tags
+	struct input_iterator_tag { };
+	struct output_iterator_tag { };
+	struct forward_iterator_tag: public input_iterator_tag { };
+	struct bidirectional_iterator_tag: public forward_iterator_tag { };
+	struct random_access_iterator_tag: public bidirectional_iterator_tag { };
+	struct contiguous_iterator_tag: public random_access_iterator_tag { };
+
+	template <class Category, class T, class Distance = ptrdiff_t,
+					class Pointer = T*, class Reference = T&>
+	struct iterator
+	{
+		typedef T			value_type;
+		typedef Distance	difference_type;
+		typedef Pointer		pointer;
+		typedef Reference	reference;
+		typedef Category	iterator_category;
+	};
 
 	template <typename Iter>
 	struct	iterator_traits
@@ -38,6 +54,7 @@ namespace	ft
 		typedef	T*							pointer;
 		typedef	T&							reference;
 		typedef	random_access_iterator_tag	iterator_category;
+		typedef	contiguous_iterator_tag		iterator_concept;
 	};
 
 	template <typename T>
