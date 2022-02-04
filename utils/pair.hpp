@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:51:45 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/04 13:31:06 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/04 14:34:05 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,32 @@ namespace	ft
 	//non-member functions
 	template<typename T1, typename T2>
 	pair<T1, T2>	make_pair(T1 t, T2 u) { return pair<T1, T2>(t, u) ; }
+	
+	template <typename T1, typename T2>
+	bool operator== (const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
+	{ return lhs.first==rhs.first && lhs.second==rhs.second ; }
 
+	//비교해야할 값이 두개이므로 위에 정의된 operator== 를 활용한다. 
+	template <typename T1, typename T2>
+	bool operator!= (const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
+	{ return !(lhs==rhs) ; }
+
+	template <typename T1, typename T2>
+	bool operator<  (const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
+	{ return lhs.first<rhs.first || (!(rhs.first<lhs.first) && lhs.second<rhs.second) ; }
+
+	//비교해야할 값이 두개이므로 위에 정의된 operator< 를 활용한다
+	template <typename T1, typename T2>
+	bool operator<= (const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
+	{ return !(rhs<lhs) ; }
+
+	template <typename T1, typename T2>
+	bool operator>  (const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
+	{ return rhs<lhs ; }
+
+	template <typename T1, typename T2>
+	bool operator>= (const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
+	{ return !(lhs<rhs) ; }
 }
-
-
-
 
 #endif
