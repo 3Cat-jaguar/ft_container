@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:48:04 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/07 11:41:17 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/07 13:57:50 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,42 +53,42 @@ namespace	ft
 		reference			operator[]( difference_type	n ) const { return base()[-n-1] ; }
 		reverse_iterator&	operator++()
 		{
-			++(*this) ;
+			--(*this) ;
 			return this ;
 		}
 		reverse_iterator	operator++(int)
 		{
 			reverse_iterator	tmp = *this ;
-			++(*this);
+			--(*this);
 			return tmp ;
 		}
 		reverse_iterator&	operator--()
 		{
-			--(*this) ;
+			++(*this) ;
 			return this ;
 		}
 		reverse_iterator	operator--(int)
 		{
 			reverse_iterator	tmp = *this ;
-			--(*this);
+			++(*this);
 			return tmp ;
 		}
 		reverse_iterator	operator+(difference_type n) const
 		{
-			return reverse_iterator( base() + n ) ;
+			return reverse_iterator( base() - n ) ;
 		}
 		reverse_iterator	operator-(difference_type n) const
 		{
-			return reverse_iterator( base() - n ) ;
+			return reverse_iterator( base() + n ) ;
 		}
 		reverse_iterator&	operator+=(difference_type n)
 		{
-			current += n ;
+			current -= n ;
 			return *this ;
 		}
 		reverse_iterator&	operator-=(difference_type n)
 		{
-			current -= n ;
+			current += n ;
 			return *this ;
 		}
 	};
@@ -135,7 +135,7 @@ namespace	ft
 				const reverse_iterator<Iter>& rev_it)
 	{
 		reverse_iterator<Iter>	tmp(rev_it);
-		tmp += n ;
+		tmp -= n ;
 		return tmp ;
 	}
 	template<typename Iter>
@@ -144,7 +144,7 @@ namespace	ft
 				const reverse_iterator<Iter>& rev_it)
 	{
 		reverse_iterator<Iter>	tmp(rev_it);
-		tmp -= n ;
+		tmp += n ;
 		return tmp ;
 	}
 }
