@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:44:11 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/04 17:22:57 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/07 17:54:31 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,36 +34,132 @@ namespace	ft
 		typedef	ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
 	private:
-		value_type*	elements;
-		size_type	size;
-		size_type	capacity;
+		allcator_type	alloc;
+		value_type*		elements;
+		value_type*		begin;
+		value_type*		end;
+		size_type		size;
+		size_type		capacity;
 
 	public:
 		//constructor
-		explicit	vector( const allocator_type& alloc = allocator_type() );
+		explicit	vector( const allocator_type& alloc = allocator_type<T>() )
+		: alloc(alloc), elements(nullptr), begin(nullptr), end(nullptr), size(0), capacity(0)
+		{}
+		//val 에 있는 내용으로 초기화하여 생성
 		explicit	vector( size_type n, const value_type& val = value_type(),
-							const_allocator_type& alloc = allocator_type() );
+							const_allocator_type& alloc = allocator_type() )
+		: alloc(alloc), size(n), capacity(n)
+		{
+			element = alloc.allocate(n);
+			begin = elements;
+			end = begin;
+			for(int i = 0; i < n; i++, end++)
+			{
+				alloc.construct(end, val);
+			}
+		}
+		//InputIter 의 first 부터 last 까지의 내용으로 초기화하여 생성
 		template <typename InputIter>
 		vector( InputIter first, InputIter last, 
-				const allocator_type& alloc = allocator_type() );
-		vector(const vector& copy);
+				const allocator_type& alloc = allocator_type() )
+		:alloc(alloc)
+		{
+			difference_type	diff = iterator::distance(first, last);
+			elements = alloc.allocate(diff);
+			size = static_cast<size_type>(diff);
+			capacity = size;
+			begin = elements;
+			end = begin;
+			for ( ; first != last ; end++, first++)
+			{
+				alloc.construct(end, *first);
+			}
+		}
+		vector(const vector& copy)
+		{
+			*this = copy;
+		}
 		//assignation operator
-		vector&	operator=(const vector& copy) ;
+		vector&	operator=(const vector& copy)
+		{
+			alloc = copy.alloc;
+			size = copy.size;
+			capacity = copy.capacity;
+			elements = alloc.allocate(capacity);
+			begin = elements;
+			end = begin;
+			for(size_type i = 0; i < size; i++, end++)
+			{
+				alloc.construct(end, copy.elements[i]);
+			}
+		}
 		//destructor
-		~vector();
+		~vector()
+		{
+			alloc.deallocate(elements, capacity);
+		}
 
 		//member functions
 
 		//	iterators
-		begin(); // first element 의 iterator 를 반환
-		end();
-		rbegin();
-		rend();
+		iterator	begin() // first element 의 iterator 를 반환
+		{
+			return iterator(*begin) ;
+		}
+		const_iterator	begin() const
+		{
+			return const_iterator(*begin) ;
+		}
+		iterator	end()
+		{
+			return iterator(*end) ;
+		}
+		const_iterator	end() const
+		{
+			return const_iterator(*end) ;
+		}
+		reverse_iterator	rbegin()
+		{
+			return reverse_iterator(*end) ;
+		}
+		const_reverse_iterator	rbegin() const
+		{
+			return const_reverse_iterator(*end) ;
+		}
+		reverse_iterator	rend()
+		{
+			return reverse_iterator(*begin) ;
+		}
+		const_reverse_iterator	rend() const
+		{
+			return const_reverse_iterator(*begin) ;
+		}
+
 		//	capacity
-		size();
-		max_size();
-		resize();
-		capacity();
+		size_type	size() const { return size ; } // 저장된 element 의 수
+		size_type	max_size() const { return alloc.max_size() ; } // 추가 allocate까지 최대로 가능한 사이즈. 실제 allocate 되어있는 최대 size는 capacity 이다. 혼동하지말기.
+		void	resize(size_type cnt, value_type value = value_type())
+		{
+			if (max_size() < cnt)
+				throw(std::length_error("ft::vector::resize length error"));
+			value_type*	tmp = alloc.allocate(cnt, elements);
+			if (size < cnt)
+			{
+				for (size_type i = size; i < cnt; i++)
+				{
+					alloc.construct(&tmp[i], value);
+				}
+			}
+			else
+				size = cnt ;
+			alloc.deallocate(elements, capacity);
+			elements = tmp ;
+			capacity = cnt ;
+		}
+		capacity(); // allocate 되어있는 수
+
+
 		empty();
 		reserve();
 		//	element access
