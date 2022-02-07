@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:48:04 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/04 12:37:34 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/07 11:41:17 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ namespace	ft
 		{
 			return reverse_iterator( base() + n ) ;
 		}
-		reverse_iterator	operator+(difference_type n) const
+		reverse_iterator	operator-(difference_type n) const
 		{
 			return reverse_iterator( base() - n ) ;
 		}
