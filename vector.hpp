@@ -137,8 +137,10 @@ namespace	ft
 		}
 
 		//	capacity
-		size_type	size() const { return size ; } // 저장된 element 의 수
-		size_type	max_size() const { return alloc.max_size() ; } // 추가 allocate까지 최대로 가능한 사이즈. 실제 allocate 되어있는 최대 size는 capacity 이다. 혼동하지말기.
+		size_type	size() const
+		{ return size ; } // 저장된 element 의 수
+		size_type	max_size() const
+		{ return alloc.max_size() ; } // 추가 allocate까지 최대로 가능한 사이즈. 실제 allocate 되어있는 최대 size는 capacity 이다. 혼동하지말기.
 		void	resize(size_type cnt, value_type value = value_type())
 		{
 			if (max_size() < cnt)
@@ -157,16 +159,30 @@ namespace	ft
 			elements = tmp ;
 			capacity = cnt ;
 		}
-		capacity(); // allocate 되어있는 수
+		size_type capacity() const  // allocate 되어있는 수
+		{}
 
-
-		empty();
-		reserve();
+		bool empty() const
+		{}
+		void reserve( size_type new_cap )
+		{}
 		//	element access
-		operator[];
-		at();
-		front(); // first element 의 reference 를 반환
-		back();
+		reference operator[]( size_type pos )
+		{}
+		const_reference operator[]( size_type pos ) const
+		{}
+		reference at( size_type pos )
+		{}
+		const_reference at( size_type pos ) const
+		{}
+		reference front() // first element 의 reference 를 반환
+		{}
+		const_reference front() const
+		{}
+		reference back()
+		{}
+		const_reference back() const
+		{}
 		value_type*	data() // first element 의 pointer 를 반환
 		{
 			if (size() == 0)
@@ -180,16 +196,35 @@ namespace	ft
 			return elements ;
 		}
 		//	modifier
-		assign();
-		push_back();
-		pop_back();
-		insert();
-		erase();
-		swap();
-		clear();
+		void assign( size_type count, const T& value )
+		{}
+		template< class InputIt >
+		void assign( InputIt first, InputIt last )
+		{}
+		void push_back( const T& value )
+		{}
+		void pop_back()
+		{}
+		iterator insert( iterator pos, const T& value )
+		{}
+		void insert( iterator pos, size_type count, const T& value )
+		{}
+		template< class InputIt >
+		void insert( iterator pos, InputIt first, InputIt last )
+		{}
+		iterator erase( iterator pos )
+		{}
+		iterator erase( iterator first, iterator last )
+		{}
+		void swap( vector& other )
+		{}
+		void	clear()
+		{}
 		//	allcator
-		get_allocator();
+		allocator_type get_allocator() const
+		{}
 	};
+
 	//non-member functions
 	template <class T, class Alloc>
 	bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
@@ -211,7 +246,7 @@ namespace	ft
 	bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
 
 	template <class T, class Alloc>
-	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y);
+	void swap (vector<T,Alloc>& lhs, vector<T,Alloc>& rhs);
 }
 
 
