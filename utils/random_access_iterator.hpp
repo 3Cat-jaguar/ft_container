@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:48:04 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/10 17:21:55 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/10 18:28:41 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,19 +150,7 @@ namespace	ft
 		tmp -= n ;
 		return tmp ;
 	}
-	template<typename T>
-	typename random_access_iterator<T>::difference_type
-	distance(const random_access_iterator<T>& lhs,
-			const random_access_iterator<T>& rhs)
-	{
-		typename random_access_iterator<T>::difference_type result = 0;
-		while (lhs != rhs)
-		{
-			lhs++;
-			result++;
-		}
-		return result ;
-	}
+	
 }
 
 

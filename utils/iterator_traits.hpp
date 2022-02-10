@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   iterators_traits.hpp                               :+:      :+:    :+:   */
+/*   iterator_traits.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:47:27 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/04 15:28:14 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/10 18:28:18 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,18 @@ namespace	ft
 		typedef typename Iter::iterator_category	iterator_category;
 	};
 
+	template<typename Iter>
+	typename Iter::difference_type	distance(const Iter& lhs, const Iter& rhs)
+	{
+		typename Iter::difference_type result = 0;
+		while (lhs != rhs)
+		{
+			lhs++;
+			result++;
+		}
+		return result ;
+	}
+	
 	template <typename T>
 	struct	iterator_traits<T*>
 	{
