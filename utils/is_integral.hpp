@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:49:27 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/03 17:26:30 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/10 15:33:50 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,11 @@ namespace	ft
 	template <>
 	struct	is_integral_type<char> : public is_integral_value<true, char> {};
 
-	template <>
-	struct	is_integral_type<char16_t> : public is_integral_value<true, char16_t> {};
+	// template <>
+	// struct	is_integral_type<char16_t> : public is_integral_value<true, char16_t> {};
 
-	template <>
-	struct	is_integral_type<char32_t> : public is_integral_value<true, char32_t> {};
+	// template <>
+	// struct	is_integral_type<char32_t> : public is_integral_value<true, char32_t> {};
 
 	template <>
 	struct	is_integral_type<wchar_t> : public is_integral_value<true, wchar_t> {};
