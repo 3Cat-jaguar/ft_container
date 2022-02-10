@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:48:04 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/07 12:24:12 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/10 17:21:55 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,20 +17,19 @@
 
 namespace	ft
 {
-	template<typename Iter>
-	class	random_access_iterator
+	template<typename T>
+	class	random_access_iterator : ft::iterator<ft::random_access_iterator_tag, T>
 	{
-		typedef	Iter											iterator_type;
-		typedef ft::iterator_traits<Iter>::iterator_category	iterator_category;
-		typedef ft::iterator_traits<Iter>::value_type			value_type;
-		typedef ft::iterator_traits<Iter>::difference_type		difference_type;
-		typedef ft::iterator_traits<Iter>::pointer				pointer;
-		typedef ft::iterator_traits<Iter>::reference			reference;
+		typedef typename ft::iterator<ft::random_access_iterator_tag, T>::iterator_category	iterator_category;
+		typedef typename ft::iterator<ft::random_access_iterator_tag, T>::value_type			value_type;
+		typedef typename ft::iterator<ft::random_access_iterator_tag, T>::difference_type	difference_type;
+		typedef T*			pointer;
+		typedef T&			reference;
 	protected:
-		iterator_type	current ;
+		pointer	current ;
 	public:
-		random_access_iterator() {}
-		explicit	random_access_iterator( iterator_type x ) { current = x ; }
+		random_access_iterator():current(nullptr) {}
+		explicit	random_access_iterator( pointer x ) { current = x ; }
 		template <typename U >
 		random_access_iterator( const random_access_iterator<U>& other ) { current = other.current ; }
 		~random_access_iterator() {}
@@ -40,37 +39,36 @@ namespace	ft
 			current = other.current ;
 			return *this ;
 		}
-		iterator_type	base()
+		pointer	base() const
 		{
-			return random_access_iterator<Iter>(current).current ;
+			return current ;
 		}
 		reference			operator*() const
 		{
-			iterator_type	tmp = current ;
-			return *--tmp ;
+			return *current ;
 		}
 		pointer				operator->() const { return &(operator*()) ; }
 		reference			operator[]( difference_type	n ) const { return base()[-n-1] ; }
 		random_access_iterator&	operator++()
 		{
-			++(*this) ;
-			return this ;
+			current++ ;
+			return *this ;
 		}
 		random_access_iterator	operator++(int)
 		{
 			random_access_iterator	tmp = *this ;
-			++(*this);
+			(this->current)++;
 			return tmp ;
 		}
 		random_access_iterator&	operator--()
 		{
-			--(*this) ;
-			return this ;
+			current-- ;
+			return *this ;
 		}
 		random_access_iterator	operator--(int)
 		{
 			random_access_iterator	tmp = *this ;
-			--(*this);
+			(this->current)--;
 			return tmp ;
 		}
 		random_access_iterator	operator+(difference_type n) const
@@ -91,72 +89,79 @@ namespace	ft
 			current -= n ;
 			return *this ;
 		}
-		//additional functions
-		difference_type	distance(Iter fist, Iter last)
+		reference	operator[](difference_type n)
 		{
-			difference_type	result = 0;
-			while (first != last)
-			{
-				result++;
-				first++;
-			}
-			return result ;
+			return *(operator+(n)) ;
 		}
+
 	};
 	//non-member function operators
-	template<typename Iter>
-	bool					operator==(const random_access_iterator<Iter>& lhs,
-										const random_access_iterator<Iter>& rhs)
+	template<typename T>
+	bool					operator==(const random_access_iterator<T>& lhs,
+										const random_access_iterator<T>& rhs)
 	{
 		return lhs.base() == rhs.base() ;
 	}
-	template<typename Iter>
-	bool					operator!=(const random_access_iterator<Iter>& lhs,
-										const random_access_iterator<Iter>& rhs)
+	template<typename T>
+	bool					operator!=(const random_access_iterator<T>& lhs,
+										const random_access_iterator<T>& rhs)
 	{
 		return lhs.base() != rhs.base() ;
 	}
-	template<typename Iter>
-	bool					operator<(const random_access_iterator<Iter>& lhs,
-										const random_access_iterator<Iter>& rhs)
+	template<typename T>
+	bool					operator<(const random_access_iterator<T>& lhs,
+										const random_access_iterator<T>& rhs)
 	{
 		return lhs.base() < rhs.base() ;
 	}
-	template<typename Iter>
-	bool					operator<=(const random_access_iterator<Iter>& lhs,
-										const random_access_iterator<Iter>& rhs)
+	template<typename T>
+	bool					operator<=(const random_access_iterator<T>& lhs,
+										const random_access_iterator<T>& rhs)
 	{
 		return lhs.base() <= rhs.base() ;
 	}
-	template<typename Iter>
-	bool					operator>(const random_access_iterator<Iter>& lhs,
-										const random_access_iterator<Iter>& rhs)
+	template<typename T>
+	bool					operator>(const random_access_iterator<T>& lhs,
+										const random_access_iterator<T>& rhs)
 	{
 		return lhs.base() > rhs.base() ;
 	}
-	template<typename Iter>
-	bool					operator>=(const random_access_iterator<Iter>& lhs,
-										const random_access_iterator<Iter>& rhs)
+	template<typename T>
+	bool					operator>=(const random_access_iterator<T>& lhs,
+										const random_access_iterator<T>& rhs)
 	{
 		return lhs.base() >= rhs.base() ;
 	}
-	template<typename Iter>
-	random_access_iterator<Iter>	operator+(
-				typename random_access_iterator<Iter>::difference_type n,
-				const random_access_iterator<Iter>& rev_it)
+	template<typename T>
+	random_access_iterator<T>	operator+(
+				typename random_access_iterator<T>::difference_type n,
+				const random_access_iterator<T>& rev_it)
 	{
-		random_access_iterator<Iter>	tmp(rev_it);
+		random_access_iterator<T>	tmp(rev_it);
 		tmp += n ;
 		return tmp ;
 	}
-	template<typename Iter>
-	random_access_iterator<Iter>	operator-(
-				typename random_access_iterator<Iter>::difference_type n,
-				const random_access_iterator<Iter>& rev_it)
+	template<typename T>
+	random_access_iterator<T>	operator-(
+				typename random_access_iterator<T>::difference_type n,
+				const random_access_iterator<T>& rev_it)
 	{
-		random_access_iterator<Iter>	tmp(rev_it);
+		random_access_iterator<T>	tmp(rev_it);
 		tmp -= n ;
 		return tmp ;
+	}
+	template<typename T>
+	typename random_access_iterator<T>::difference_type
+	distance(const random_access_iterator<T>& lhs,
+			const random_access_iterator<T>& rhs)
+	{
+		typename random_access_iterator<T>::difference_type result = 0;
+		while (lhs != rhs)
+		{
+			lhs++;
+			result++;
+		}
+		return result ;
 	}
 }
 
