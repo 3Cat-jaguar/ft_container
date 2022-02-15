@@ -5,6 +5,7 @@
 	#include <map>
 	#include <stack>
 	#include <vector>
+	#include "vector.hpp"
 	#include "test_vector.hpp"
 	#include "./utils/random_access_iterator.hpp"
 	
@@ -41,14 +42,22 @@ int main(int argc, char** argv) {
 
 	// vector test command
 	ft::test_vector<int> myvec;
+	ft::vector<int> myvec2;
 	std::vector<int> origin;
 	for (int i = 0; i < 10; i++)
 	{
 		myvec.push_back(i);
+		std::cout << "myvec push_back " << i << std::endl;
+		myvec2.push_back(i);
+		std::cout << "myvec2 push_back " << i << std::endl;
+		std::cout << "myvec2 size : " << myvec2.size() << ", cap : " << myvec2.capacity() << " //\n";
 		origin.push_back(i);
+		std::cout << "origin push_back " << i << std::endl;
 	}
 	ft::test_vector<int>::iterator first1 = myvec.begin();
 	ft::test_vector<int>::iterator last1 = myvec.end();
+	ft::vector<int>::iterator first3 = myvec2.begin();
+	ft::vector<int>::iterator last3 = myvec2.end();
 	std::vector<int>::iterator first2 = origin.begin();
 	std::vector<int>::iterator last2 = origin.end();
 
@@ -64,6 +73,13 @@ int main(int argc, char** argv) {
 	{
 		std::cout << *first2 << ", ";
 		first2++;
+	}
+	std::cout << "end\n";
+	std::cout << ">>use my vector<<\n";
+	while (first3 != last3)
+	{
+		std::cout << *first3 << ", ";
+		first3++;
 	}
 	std::cout << "end\n";
 	return (0);
