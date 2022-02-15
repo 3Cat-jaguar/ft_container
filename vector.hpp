@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:44:11 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/15 23:31:43 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/16 00:11:19 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 # define VECTOR_HPP
 
 # include <memory> // for allocator
+# include "./utils/random_access_iterator.hpp"
+# include "./utils/reverse_iterator.hpp"
 
 namespace	ft
 {
@@ -36,33 +38,33 @@ namespace	ft
 	private:
 		allcator_type	alloc;
 		value_type*		elements;
-		value_type*		begin;
-		value_type*		end;
-		value_type*		end_capacity;
-		size_type		size;
-		size_type		capacity;
+		value_type*		start;
+		value_type*		fin;
+		value_type*		fin_cap;
+		size_type		len;
+		size_type		cap;
 
 	public:
 		//constructor
 		explicit	vector( const allocator_type& alloc = allocator_type<T>() )
-		: alloc(alloc), elements(nullptr), begin(nullptr), end(nullptr), end_capacity(nullptr), size(0), capacity(0)
+		: alloc(alloc), elements(nullptr), start(nullptr), fin(nullptr), fin_cap(nullptr), len(0), cap(0)
 		{}
 		//val 에 있는 내용으로 초기화하여 생성
 		explicit	vector( size_type n, const value_type& val = value_type(), const_allocator_type& alloc = allocator_type() )
-		: alloc(alloc), size(n), capacity(0)
+		: alloc(alloc), len(n), cap(0)
 		{
-			while (capacity < size)
+			while (cap < len)
 			{
-				size_type new_capacity = (capacity * 2 > 0) ? (capacity * 2) : 1;
-				capacity = new_capacity ;
+				size_type new_capacity = (cap * 2 > 0) ? (cap * 2) : 1;
+				cap = new_capacity ;
 			}
-			element = alloc.allocate(capacity);
-			begin = elements;
-			end_capacity = begin + capacity ;
-			end = begin;
-			for(int i = 0; i < n; i++, end++)
+			element = alloc.allocate(cap);
+			start = elements;
+			fin_cap = start + cap ;
+			fin = start;
+			for(int i = 0; i < n; i++, fin++)
 			{
-				alloc.construct(end, val);
+				alloc.construct(fin, val);
 			}
 		}
 		//InputIter 의 first 부터 last 까지의 내용으로 초기화하여 생성
@@ -71,20 +73,20 @@ namespace	ft
 		:alloc(alloc)
 		{
 			difference_type	diff = iterator::distance(first, last);
-			size = static_cast<size_type>(diff);
-			capacity = 0 ;
-			while (capacity < size)
+			len = static_cast<size_type>(diff);
+			cap = 0 ;
+			while (cap < len)
 			{
-				size_type new_capacity = (capacity * 2 > 0) ? (capacity * 2) : 1;
-				capacity = new_capacity ;
+				size_type new_capacity = (cap * 2 > 0) ? (cap * 2) : 1;
+				cap = new_capacity ;
 			}
-			element = alloc.allocate(capacity);
-			begin = elements;
-			end_capacity = begin + capacity ;
-			end = begin;
-			for ( ; first != last ; end++, first++)
+			element = alloc.allocate(cap);
+			start = elements;
+			fin_cap = start + cap ;
+			fin = start;
+			for ( ; first != last ; fin++, first++)
 			{
-				alloc.construct(end, *first);
+				alloc.construct(fin, *first);
 			}
 		}
 		vector(const vector& copy)
@@ -95,22 +97,22 @@ namespace	ft
 		vector&	operator=(const vector& copy)
 		{
 			alloc = copy.alloc;
-			size = copy.size;
-			capacity = copy.capacity;
-			elements = alloc.allocate(capacity);
-			begin = elements;
-			end_capacity = begin + capacity ;
-			end = begin;
-			for(size_type i = 0; i < size; i++, end++)
+			len = copy.len;
+			cap = copy.cap;
+			elements = alloc.allocate(cap);
+			start = elements;
+			fin_cap = start + cap ;
+			fin = start;
+			for(size_type i = 0; i < len; i++, fin++)
 			{
-				alloc.construct(end, value_type(copy.elements[i]));
+				alloc.construct(fin, value_type(copy.elements[i]));
 			}
 		}
 		//destructor
 		~vector()
 		{
 			clear();
-			alloc.deallocate(elements, capacity);
+			alloc.deallocate(elements, cap);
 		}
 
 		//member functions
@@ -118,19 +120,19 @@ namespace	ft
 		//	iterators
 		iterator	begin() // first element 의 iterator 를 반환
 		{
-			return iterator(begin) ;
+			return iterator(start) ;
 		}
 		const_iterator	begin() const
 		{
-			return const_iterator(begin) ;
+			return const_iterator(start) ;
 		}
 		iterator	end()
 		{
-			return iterator(end) ;
+			return iterator(fin) ;
 		}
 		const_iterator	end() const
 		{
-			return const_iterator(end) ;
+			return const_iterator(fin) ;
 		}
 		reverse_iterator	rbegin()
 		{
@@ -152,7 +154,7 @@ namespace	ft
 		//	capacity
 		size_type	size() const
 		{
-			return size ;
+			return len ;
 		} // 저장된 element 의 수
 		size_type	max_size() const
 		{
@@ -160,45 +162,45 @@ namespace	ft
 		} // 추가 allocate까지 최대로 가능한 사이즈. 실제 allocate 되어있는 최대 size는 capacity 이다. 혼동하지말기.
 		void	resize(size_type cnt, value_type value = value_type())
 		{
-			if (size > cnt) // 사이즈를 줄이는 경우
+			if (size() > cnt) // 사이즈를 줄이는 경우
 			{
-				while (size != cnt)
+				while (size() != cnt)
 					pop_back(); // 뒤에서부터 erase 처리
 			}
-			else if (size > cnt) // 사이즈를 키우는 경우
+			else if (size() > cnt) // 사이즈를 키우는 경우
 			{
-				while (size != cnt)
+				while (size() != cnt)
 					push_back(value); // 뒤에서부터 insert 처리. 공간 부족하면 reserve
 			}
 		}
 		size_type capacity() const  // allocate 되어있는 수
 		{
-			return capacity ;
+			return cap ;
 		}
 
 		bool empty() const
 		{
-			if (size == 0)
+			if (len == 0)
 				return true ;
 			return false ;
 		}
 		void reserve( size_type new_cap )
 		{
-			if (new_cap <= capacity)
+			if (new_cap <= cap)
 				return ;
 			if (max_size() < new_cap)
 				throw ( std::length_error("vector::reserve") ) ;
 			value_type* tmp = alloc.allocate(new_cap);
-			for(int i = 0; i < size ; i++)
+			for(int i = 0; i < len ; i++)
 			{
 				tmp[i] = elements[i];
 			}
-			alloc.deallocate(elements, capacity);
-			capacity = new_cap;
+			alloc.deallocate(elements, cap);
+			cap = new_cap;
 			elements = tmp;
-			begin = elements;
-			end = begin + size ;
-			end_capacity = begin + capacity ;
+			start = elements;
+			fin = start + len ;
+			fin_cap = start + cap ;
 		}
 		//	element access
 		reference operator[]( size_type pos )
@@ -209,39 +211,39 @@ namespace	ft
 		{}
 		reference at( size_type pos )
 		{
-			if (pos < size)
+			if (pos < size())
 				throw(std::out_of_range("vector::at"));
 			return elements[pos] ;
 		}
 		const_reference at( size_type pos ) const
 		{
-			if (pos < size)
+			if (pos < size())
 				throw(std::out_of_range("vector::at"));
 			return elements[pos] ;
 		}
 		reference front() // first element 의 reference 를 반환
 		{
-			if !begin
+			if !start
 				return value_type() ;
-			return *begin ;
+			return *start ;
 		}
 		const_reference front() const
 		{
-			if !begin
+			if !start
 				return value_type() ;
-			return *begin ;
+			return *start ;
 		}
 		reference back()
 		{
-			if (begin == end)
+			if (start == fin)
 				return value_type() ;
-			return *(begin + size - 1) ;
+			return *(start + len - 1) ;
 		}
 		const_reference back() const
 		{
-			if (begin == end)
+			if (start == fin)
 				return value_type() ;
-			return *(begin + size - 1) ;
+			return *(start + len - 1) ;
 		}
 		value_type*	data() // first element 의 pointer 를 반환
 		{
@@ -255,23 +257,23 @@ namespace	ft
 		void assign( size_type count, const T& value )
 		{
 			clear();
-			if (capacity < count)
+			if (cap < count)
 			{
-				alloc.deallocate(elements, capacity);
+				alloc.deallocate(elements, cap);
 				size_type new_capacity ;
-				while (capacity < count)
+				while (cap < count)
 				{
-					new_capacity = (capacity * 2 > 0) ? (capacity * 2) : 1;
-					capacity = new_capacity ;
+					new_capacity = (cap * 2 > 0) ? (cap * 2) : 1;
+					cap = new_capacity ;
 				}
-				elements = alloc.allocate(capacity);
-				begin = elements;
-				end_capacity = begin + capacity ;
+				elements = alloc.allocate(cap);
+				start = elements;
+				fin_cap = start + cap ;
 			}
-			end = begin ;
-			for (int i = 0; i < count; i++, end++)
+			fin = start ;
+			for (int i = 0; i < count; i++, fin++)
 			{
-				alloc.construct(end, value_type(value));
+				alloc.construct(fin, value_type(value));
 			}
 		}
 		template< class InputIt >
@@ -279,23 +281,23 @@ namespace	ft
 		{
 			clear ;
 			difference_type count = iterator::distance(first, last);
-			if (capacity < count)
+			if (cap < count)
 			{
-				alloc.deallocate(elements, capacity);
+				alloc.deallocate(elements, cap);
 				size_type new_capacity ;
-				while (capacity < count)
+				while (cap < count)
 				{
-					new_capacity = (capacity * 2 > 0) ? (capacity * 2) : 1;
-					capacity = new_capacity ;
+					new_capacity = (cap * 2 > 0) ? (cap * 2) : 1;
+					cap = new_capacity ;
 				}
-				elements = alloc.allocate(capacity);
-				begin = elements;
-				end_capacity = begin + capacity ;
+				elements = alloc.allocate(cap);
+				start = elements;
+				fin_cap = start + cap ;
 			}
-			end = begin ;
-			for ( ; first != last ; end++, first++)
+			fin = start ;
+			for ( ; first != last ; fin++, first++)
 			{
-				alloc.construct(end, value_type(*first));
+				alloc.construct(fin, value_type(*first));
 			}
 		}
 		void push_back( const T& value )
@@ -308,12 +310,12 @@ namespace	ft
 		}
 		iterator insert( iterator pos, const T& value )
 		{
-			if (size + 1 < capacity)
+			if (size() + 1 < cap)
 			{
-				size_type	new_cap = (capacity * 2 > 0) ? (capacity * 2) : 1;
+				size_type	new_cap = (cap * 2 > 0) ? (cap * 2) : 1;
 				reserve(new_cap);
 			}
-			value_type* cur = end;
+			value_type* cur = fin;
 			if (cur < &(*pos))
 				pos = end();
 			while (cur > &(*pos))
@@ -323,17 +325,17 @@ namespace	ft
 				alloc.destroy(cur);
 			}
 			alloc.construct(cur, value);
-			size += 1;
-			end++;
+			len += 1;
+			fin++;
 		}
 		void insert( iterator pos, size_type count, const T& value )
 		{
-			while (size + count < capacity)
+			while (size() + count < cap)
 			{
-				size_type	new_cap = (capacity * 2 > 0) ? (capacity * 2) : 1;
+				size_type	new_cap = (cap * 2 > 0) ? (cap * 2) : 1;
 				reserve(new_cap);
 			}
-			value_type* cur = end;
+			value_type* cur = fin;
 			if (cur < &(*pos))
 				pos = end();
 			while (cur > &(*pos))
@@ -346,20 +348,20 @@ namespace	ft
 			{
 				alloc.construct(cur + i, value);
 			}
-			size = size + count ;
-			end = end + count ;
+			len = len + count ;
+			fin = fin + count ;
 		}
 		template< class InputIt >
 		void insert( iterator pos, InputIt first, InputIt last )
 		{
 			difference_type diff = iterator::distance(first, last);
 			size_type	count = static_cast<size_type>(diff);
-			while (size + count < capacity)
+			while (size() + count < cap)
 			{
-				size_type	new_cap = (capacity * 2 > 0) ? (capacity * 2) : 1;
+				size_type	new_cap = (cap * 2 > 0) ? (cap * 2) : 1;
 				reserve(new_cap);
 			}
-			value_type* cur = end;
+			value_type* cur = fin;
 			if (cur < &(*pos))
 				pos = end();
 			while (cur > &(*pos))
@@ -372,8 +374,8 @@ namespace	ft
 			{
 				alloc.construct(cur + i, *first);
 			}
-			size = size + count ;
-			end = end + count ;
+			len = len + count ;
+			fin = fin + count ;
 		}
 		iterator erase( iterator pos )
 		{
@@ -381,14 +383,14 @@ namespace	ft
 				return pos ;
 			value_type* cur = &(*pos);
 			alloc.destroy(cur);
-			while (cur + 1 < end)
+			while (cur + 1 < fin)
 			{
 				alloc.construct(cur, *(cur + 1));
 				cur++;
 				alloc.destroy(cur);
 			}
-			size--;
-			end--;
+			len--;
+			fin--;
 			return pos ;
 		}
 		iterator erase( iterator first, iterator last )
@@ -409,44 +411,44 @@ namespace	ft
 				alloc.construct(pos + i, *first);
 				alloc.destroy(&(*first));
 			}
-			size = size - count ;
-			end = end - count ;
+			len = len - count ;
+			fin = fin - count ;
 			return iterator(pos) ;
 		}
 		void swap( vector& other )
 		{
 			allocator_type	tmp_alloc = other.alloc;
 			value_type*		tmp_elements = other.elements;
-			value_type*		tmp_begin = other.begin;
-			value_type*		tmp_end = other.end;
-			value_type*		tmp_end_cap = other.end_capacity;
-			size_type		tmp_size = other.size;
-			size_type		tmp_cap = other.capacity;
+			value_type*		tmp_start = other.start;
+			value_type*		tmp_fin = other.fin;
+			value_type*		tmp_fin_cap = other.fin_cap;
+			size_type		tmp_len = other.len;
+			size_type		tmp_cap = other.cap;
 
 			other.alloc = this->alloc;
 			other.elements = this->elements;
-			other.begin = this->begin;
-			other.end = this->end;
-			other.end_capacity = this->end_capacity;
-			other.size = this->size;
-			other.capacity = this->capacity;
+			other.start = this->start;
+			other.fin = this->fin;
+			other.fin_cap = this->fin_cap;
+			other.len = this->len;
+			other.cap = this->cap;
 			
 			this->alloc = tmp_alloc;
 			this->elements = tmp_elements;
-			this->begin = tmp_begin;
-			this->end = tmp_end;
-			this->end_capacity = tmp_end_cap;
-			this->size = tmp_size;
-			this->capacity = tmp_cap;
+			this->start = tmp_start;
+			this->fin = tmp_fin;
+			this->fin_cap = tmp_fin_cap;
+			this->len = tmp_len;
+			this->cap = tmp_cap;
 		}
 		void	clear()
 		{
-			for(size_type i = 0; i < size; i++)
+			for(size_type i = 0; i < len; i++)
 			{
-				end--;
-				alloc.destroy(end) ;
+				fin--;
+				alloc.destroy(fin) ;
 			}
-			size = 0 ;
+			len = 0 ;
 		}
 		//	allcator
 		allocator_type get_allocator() const
@@ -531,27 +533,27 @@ namespace	ft
 	{
 			allocator_type	tmp_alloc = rhs.alloc;
 			value_type*		tmp_elements = rhs.elements;
-			value_type*		tmp_begin = rhs.begin;
-			value_type*		tmp_end = rhs.end;
-			value_type*		tmp_end_cap = rhs.end_capacity;
-			size_type		tmp_size = rhs.size;
-			size_type		tmp_cap = rhs.capacity;
+			value_type*		tmp_start = rhs.start;
+			value_type*		tmp_fin = rhs.fin;
+			value_type*		tmp_fin_cap = rhs.fin_cap;
+			size_type		tmp_len = rhs.len;
+			size_type		tmp_cap = rhs.cap;
 
 			rhs.alloc = lhs.alloc;
 			rhs.elements = lhs.elements;
-			rhs.begin = lhs.begin;
-			rhs.end = lhs.end;
-			rhs.end_capacity = lhs.end_capacity;
-			rhs.size = lhs.size;
-			rhs.capacity = lhs.capacity;
+			rhs.start = lhs.start;
+			rhs.fin = lhs.fin;
+			rhs.fin_cap = lhs.fin_cap;
+			rhs.len = lhs.len;
+			rhs.cap = lhs.cap;
 			
 			lhs.alloc = tmp_alloc;
 			lhs.elements = tmp_elements;
-			lhs.begin = tmp_begin;
-			lhs.end = tmp_end;
-			lhs.end_capacity = tmp_end_cap;
-			lhs.size = tmp_size;
-			lhs.capacity = tmp_cap;
+			lhs.start = tmp_start;
+			lhs.fin = tmp_fin;
+			lhs.fin_cap = tmp_fin_cap;
+			lhs.len = tmp_len;
+			lhs.cap = tmp_cap;
 	}
 }
 
