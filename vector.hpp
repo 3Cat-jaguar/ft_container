@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:44:11 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/16 00:11:19 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/16 01:12:05 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,22 +21,23 @@ namespace	ft
 {
 	template< typename T, typename Allocator = std::allocator<T> >
 	class	vector
-	{	
+	{
+	public :
 		typedef	T										value_type;
 		typedef	Allocator								allocator_type;
 		typedef	size_t									size_type;
 		typedef	ptrdiff_t								difference_type;
 		typedef	T&										reference;
 		typedef	const T&								const_reference;
-		typedef	Allocator::pointer						pointer;
-		typedef	Allocator::const_pointer				const_pointer;
+		typedef	typename Allocator::pointer				pointer;
+		typedef	typename Allocator::const_pointer		const_pointer;
 		typedef	ft::random_access_iterator<T>			iterator;
 		typedef	ft::random_access_iterator<const T>		const_iterator;
 		typedef	ft::reverse_iterator<iterator>			reverse_iterator;
 		typedef	ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
 	private:
-		allcator_type	alloc;
+		allocator_type	alloc;
 		value_type*		elements;
 		value_type*		start;
 		value_type*		fin;
@@ -46,11 +47,11 @@ namespace	ft
 
 	public:
 		//constructor
-		explicit	vector( const allocator_type& alloc = allocator_type<T>() )
+		explicit	vector( const allocator_type& alloc = allocator_type() )
 		: alloc(alloc), elements(nullptr), start(nullptr), fin(nullptr), fin_cap(nullptr), len(0), cap(0)
 		{}
 		//val 에 있는 내용으로 초기화하여 생성
-		explicit	vector( size_type n, const value_type& val = value_type(), const_allocator_type& alloc = allocator_type() )
+		explicit	vector( size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type() )
 		: alloc(alloc), len(n), cap(0)
 		{
 			while (cap < len)
@@ -58,11 +59,11 @@ namespace	ft
 				size_type new_capacity = (cap * 2 > 0) ? (cap * 2) : 1;
 				cap = new_capacity ;
 			}
-			element = alloc.allocate(cap);
+			elements = alloc.allocate(cap);
 			start = elements;
 			fin_cap = start + cap ;
 			fin = start;
-			for(int i = 0; i < n; i++, fin++)
+			for(size_type i = 0; i < n; i++, fin++)
 			{
 				alloc.construct(fin, val);
 			}
@@ -80,7 +81,7 @@ namespace	ft
 				size_type new_capacity = (cap * 2 > 0) ? (cap * 2) : 1;
 				cap = new_capacity ;
 			}
-			element = alloc.allocate(cap);
+			elements = alloc.allocate(cap);
 			start = elements;
 			fin_cap = start + cap ;
 			fin = start;
@@ -186,16 +187,18 @@ namespace	ft
 		}
 		void reserve( size_type new_cap )
 		{
+//			std::cout << ">> here is reserve<< this : << " << cap << " , new : " << new_cap << "//\n";
 			if (new_cap <= cap)
 				return ;
 			if (max_size() < new_cap)
 				throw ( std::length_error("vector::reserve") ) ;
 			value_type* tmp = alloc.allocate(new_cap);
-			for(int i = 0; i < len ; i++)
+			for(size_type i = 0; i < len ; i++)
 			{
 				tmp[i] = elements[i];
 			}
-			alloc.deallocate(elements, cap);
+			if (elements != nullptr)
+				alloc.deallocate(elements, cap);
 			cap = new_cap;
 			elements = tmp;
 			start = elements;
@@ -208,7 +211,9 @@ namespace	ft
 			return elements[pos] ;
 		}
 		const_reference operator[]( size_type pos ) const
-		{}
+		{
+			return elements[pos] ;
+		}
 		reference at( size_type pos )
 		{
 			if (pos < size())
@@ -223,13 +228,13 @@ namespace	ft
 		}
 		reference front() // first element 의 reference 를 반환
 		{
-			if !start
+			if (!start)
 				return value_type() ;
 			return *start ;
 		}
 		const_reference front() const
 		{
-			if !start
+			if (!start)
 				return value_type() ;
 			return *start ;
 		}
@@ -271,7 +276,7 @@ namespace	ft
 				fin_cap = start + cap ;
 			}
 			fin = start ;
-			for (int i = 0; i < count; i++, fin++)
+			for (size_type i = 0; i < count; i++, fin++)
 			{
 				alloc.construct(fin, value_type(value));
 			}
@@ -279,7 +284,7 @@ namespace	ft
 		template< class InputIt >
 		void assign( InputIt first, InputIt last )
 		{
-			clear ;
+			clear() ;
 			difference_type count = iterator::distance(first, last);
 			if (cap < count)
 			{
@@ -302,18 +307,26 @@ namespace	ft
 		}
 		void push_back( const T& value )
 		{
-			insert(end(), value);
+			if (len + 1 > cap)
+			{
+				size_type	new_cap = (cap * 2 > 0) ? (cap * 2) : 1;
+				this->reserve(new_cap);
+			}
+			this->insert(end(), value);
 		}
 		void pop_back()
 		{
-			erase(end() - 1);
+			if (len == 0)
+				return ;
+			this->erase(end() - 1);
 		}
 		iterator insert( iterator pos, const T& value )
 		{
-			if (size() + 1 < cap)
+//			std::cout << ">> here is insert<<\n";
+			if (size() + 1 > cap)
 			{
 				size_type	new_cap = (cap * 2 > 0) ? (cap * 2) : 1;
-				reserve(new_cap);
+				this->reserve(new_cap);
 			}
 			value_type* cur = fin;
 			if (cur < &(*pos))
@@ -327,10 +340,12 @@ namespace	ft
 			alloc.construct(cur, value);
 			len += 1;
 			fin++;
+			return pos ;
 		}
 		void insert( iterator pos, size_type count, const T& value )
 		{
-			while (size() + count < cap)
+//			std::cout << ">> here is insert<<\n";
+			while (size() + count > cap)
 			{
 				size_type	new_cap = (cap * 2 > 0) ? (cap * 2) : 1;
 				reserve(new_cap);
@@ -356,7 +371,7 @@ namespace	ft
 		{
 			difference_type diff = iterator::distance(first, last);
 			size_type	count = static_cast<size_type>(diff);
-			while (size() + count < cap)
+			while (size() + count > cap)
 			{
 				size_type	new_cap = (cap * 2 > 0) ? (cap * 2) : 1;
 				reserve(new_cap);
@@ -461,13 +476,13 @@ namespace	ft
 	template <class T, class Alloc>
 	bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 	{
-		vector<T,Alloc>::iterator	first1 = lhs.begin();
-		vector<T,Alloc>::iterator	last1 = lhs.end();
-		vector<T,Alloc>::iterator	first2 = rhs.begin();
-		vector<T,Alloc>::iterator	last2 = rhs.end();
+		typename vector<T,Alloc>::iterator	first1 = lhs.begin();
+		typename vector<T,Alloc>::iterator	last1 = lhs.end();
+		typename vector<T,Alloc>::iterator	first2 = rhs.begin();
+		typename vector<T,Alloc>::iterator	last2 = rhs.end();
 		
-		vector<T,Alloc>::difference_type	diff1 = vector<T,Alloc>::iterator::distance(first1, last1);
-		vector<T,Alloc>::difference_type	diff2 = vector<T,Alloc>::iterator::distance(first2, last2);
+		typename vector<T,Alloc>::difference_type	diff1 = vector<T,Alloc>::iterator::distance(first1, last1);
+		typename vector<T,Alloc>::difference_type	diff2 = vector<T,Alloc>::iterator::distance(first2, last2);
 
 		if (diff1 != diff2)
 			return false ;
@@ -489,10 +504,10 @@ namespace	ft
 	template <class T, class Alloc>
 	bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 	{
-		vector<T,Alloc>::iterator	first1 = lhs.begin();
-		vector<T,Alloc>::iterator	last1 = lhs.end();
-		vector<T,Alloc>::iterator	first2 = rhs.begin();
-		vector<T,Alloc>::iterator	last2 = rhs.end();
+		typename vector<T,Alloc>::iterator	first1 = lhs.begin();
+		typename vector<T,Alloc>::iterator	last1 = lhs.end();
+		typename vector<T,Alloc>::iterator	first2 = rhs.begin();
+		typename vector<T,Alloc>::iterator	last2 = rhs.end();
 
 		for (; first1 != last1; first1++, first2++)
 		{
@@ -531,13 +546,13 @@ namespace	ft
 	template <class T, class Alloc>
 	void swap (vector<T,Alloc>& lhs, vector<T,Alloc>& rhs)
 	{
-			allocator_type	tmp_alloc = rhs.alloc;
-			value_type*		tmp_elements = rhs.elements;
-			value_type*		tmp_start = rhs.start;
-			value_type*		tmp_fin = rhs.fin;
-			value_type*		tmp_fin_cap = rhs.fin_cap;
-			size_type		tmp_len = rhs.len;
-			size_type		tmp_cap = rhs.cap;
+			typename vector<T,Alloc>::allocator_type	tmp_alloc = rhs.alloc;
+			typename vector<T,Alloc>::value_type*		tmp_elements = rhs.elements;
+			typename vector<T,Alloc>::value_type*		tmp_start = rhs.start;
+			typename vector<T,Alloc>::value_type*		tmp_fin = rhs.fin;
+			typename vector<T,Alloc>::value_type*		tmp_fin_cap = rhs.fin_cap;
+			typename vector<T,Alloc>::size_type			tmp_len = rhs.len;
+			typename vector<T,Alloc>::size_type			tmp_cap = rhs.cap;
 
 			rhs.alloc = lhs.alloc;
 			rhs.elements = lhs.elements;
