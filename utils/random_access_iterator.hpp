@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:48:04 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/10 18:28:41 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/16 17:54:33 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ namespace	ft
 	template<typename T>
 	class	random_access_iterator : ft::iterator<ft::random_access_iterator_tag, T>
 	{
+	public:
 		typedef typename ft::iterator<ft::random_access_iterator_tag, T>::iterator_category	iterator_category;
 		typedef typename ft::iterator<ft::random_access_iterator_tag, T>::value_type			value_type;
 		typedef typename ft::iterator<ft::random_access_iterator_tag, T>::difference_type	difference_type;
