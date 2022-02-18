@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:48:04 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/16 17:54:33 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/18 18:04:14 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,9 @@ namespace	ft
 	public:
 		random_access_iterator():current(nullptr) {}
 		explicit	random_access_iterator( pointer x ) { current = x ; }
-		template <typename U >
-		random_access_iterator( const random_access_iterator<U>& other ) { current = other.current ; }
+		random_access_iterator( const random_access_iterator& other ) { current = other.current ; }
 		~random_access_iterator() {}
-		template <typename U>
-		random_access_iterator&	operator=( const random_access_iterator<U>& other)
+		random_access_iterator&	operator=( const random_access_iterator& other)
 		{
 			current = other.current ;
 			return *this ;
