@@ -1,9 +1,9 @@
-void    vector_test(void);
+#include "test_funcs.hpp"
 
 int main(void)
 {
-    vector_test();
-    // stack_test();
-    // map_test();
+    test_vector();
+    test_stack();
+    // test_map();
     return (0);
 }

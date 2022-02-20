@@ -3,7 +3,7 @@
 #include "vector.hpp"
 
 
-void vector_test()
+void test_vector()
 {
 
 	// vector test command
