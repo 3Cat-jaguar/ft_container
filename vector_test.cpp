@@ -1,22 +1,9 @@
 #include <iostream>
 #include <string>
 #include <deque>
-#define	VECTOR	0
-#define	STACK	1
-#define	MAP		2
-#define this_test	0
-#if (this_test == VECTOR) //CREATE A REAL STL EXAMPLE
-	#include <vector>
-	#include "vector.hpp"
-#elif (this_test == STACK)
-	#include <stack>
-	#include <stack.hpp>
-#else (this_test == MAP)
-	#include <map>
-	#include <map.hpp>
-#endif
-
-#include <stdlib.h>
+#include <cstdlib>
+#include <vector>
+#include "vector.hpp"
 
 
 void vector_test()
