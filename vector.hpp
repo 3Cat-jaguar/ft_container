@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:44:11 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/18 18:32:30 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/20 18:19:01 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -514,6 +514,8 @@ namespace	ft
 			if (*first1 > *first2)
 				return false ;
 		}
+		if (first2 == last2)
+			return false ;
 		return true ;
 	}
 	

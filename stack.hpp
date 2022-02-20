@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:44:11 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/20 17:51:44 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/20 18:11:09 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,22 +69,22 @@ namespace	ft
         }
         
         template< class U, class Cont >
-        friend bool operator==( const ft::stack<U,Cont>& lhs, const ft::stack<T,Container>& rhs );
+        friend bool operator==( const ft::stack<U,Cont>& lhs, const ft::stack<U,Cont>& rhs );
 
         template< class U, class Cont >
-        friend bool operator!=( const ft::stack<U,Cont>& lhs, const ft::stack<T,Container>& rhs );
+        friend bool operator!=( const ft::stack<U,Cont>& lhs, const ft::stack<U,Cont>& rhs );
     
         template< class U, class Cont >
-        friend bool operator< ( const ft::stack<U,Cont>& lhs, const ft::stack<T,Container>& rhs );
+        friend bool operator< ( const ft::stack<U,Cont>& lhs, const ft::stack<U,Cont>& rhs );
     
         template< class U, class Cont >
-        friend bool operator<=( const ft::stack<U,Cont>& lhs, const ft::stack<T,Container>& rhs );
+        friend bool operator<=( const ft::stack<U,Cont>& lhs, const ft::stack<U,Cont>& rhs );
     
         template< class U, class Cont >
-        friend bool operator> ( const ft::stack<U,Cont>& lhs, const ft::stack<T,Container>& rhs );
+        friend bool operator> ( const ft::stack<U,Cont>& lhs, const ft::stack<U,Cont>& rhs );
     
         template< class U, class Cont >
-        friend bool operator>=( const ft::stack<U,Cont>& lhs, const ft::stack<T,Container>& rhs );
+        friend bool operator>=( const ft::stack<U,Cont>& lhs, const ft::stack<U,Cont>& rhs );
 
     };
 
