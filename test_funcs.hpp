@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 17:11:32 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/20 17:12:12 by ylee             ###   ########.fr       */
+/*   Updated: 2022/02/20 17:49:09 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,6 @@
 
 void    test_vector();
 void    test_stack();
-// void    test_map();
+void    test_map();
 
 #endif
