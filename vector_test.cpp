@@ -1,7 +1,4 @@
 #include <iostream>
-#include <string>
-#include <deque>
-#include <cstdlib>
 #include <vector>
 #include "vector.hpp"
 
