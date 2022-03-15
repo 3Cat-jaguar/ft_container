@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:48:04 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/18 18:04:14 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/13 22:01:36 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,9 @@ namespace	ft
 			return *(operator+(n)) ;
 		}
 
+		operator random_access_iterator<const T> () const
+		{ return (random_access_iterator<const T>(this->_elem)); }
+		
 	};
 	//non-member function operators
 	template<typename T>
@@ -149,6 +152,7 @@ namespace	ft
 		tmp -= n ;
 		return tmp ;
 	}
+
 	
 }
 
