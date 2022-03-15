@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:51:45 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/11 00:04:49 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/15 00:30:14 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,16 +36,16 @@ namespace	ft
 		// 	first = static_cast<first_type>(p.first);
 		// 	second = static_cast<second_type>(p.second);
 		// }
-		pair( const pair& p)
-		{
-			first = p.first;
-			second = p.second;
-		}
+		template <typename U1, typename U2>
+		pair( const pair<U1, U2>& p)
+		:first(p.first), second(p.second)
+		{}
 		~pair() {}
+		
 		pair&	operator=(const pair& p)
 		{
 			first = p.first;
-			second = p.second;
+			second = p.second ;
 			return *this ;
 		}
 	};
@@ -82,7 +82,8 @@ namespace	ft
 	template <typename T1, typename T2>
 	std::ostream&	operator<<(std::ostream& out, const pair<T1, T2>& p)
 	{
-		out << "this pair Key : " << p.first << " , Mapping : " << p.second;
+		// out << "this pair Key : " << p.first << " , Mapping : " << p.second;
+		out << "[ " << p.first << " : " << p.second << " ]";
 		return out ;
 	}
 }
