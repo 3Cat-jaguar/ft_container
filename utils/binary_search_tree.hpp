@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/24 15:32:49 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/15 14:50:40 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/17 02:41:38 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ namespace   ft
 		{
 			endN = node_alloc.allocate(1);
 			node_alloc.construct(endN, Node(T(), endN, endN, endN));
+			endN->height = -1 ;
 			root = endN ;
 		}
 		binary_search_tree(const T& val, Compare comp = Compare(), Node_Alloc alloc = Node_Alloc())
@@ -54,6 +55,7 @@ namespace   ft
 		{
 			endN = node_alloc.allocate(1);
 			node_alloc.construct(endN, Node(T(), endN, endN, endN));
+			endN->height = -1 ;
 			root = node_alloc.allocate(1);
 			node_alloc.construct(root, Node(val, endN, endN, endN));
 		}
@@ -180,22 +182,25 @@ namespace   ft
 				else
 					prev->right = newNode ;
 			}
-			else if (prev == endN || biggest)
+			if (biggest)
 				endN->parent = newNode ;
 			
 			if (len == 0)
 				root = newNode ;
 			len++;
+			std::cout << ">>insert " << value << " result <<\n" ;
+			//rearrange
+			insertBalancing(newNode);
+			
 			//insert check
 			iterator	i = begin();
 			iterator	f = end();
-				std::cout << ">>insert " << value << " result <<\n" ;
 			while (i!=f)
 			{
 				std::cout << *i << std::endl;
 				i++;
 			}
-			std::cout << *i << "\t>>end" << std::endl;
+			std::cout << *i << "\t>>end\n\n";
 			
 			return ft::pair<iterator, bool>(iterator(newNode, endN), true) ;
 		}
@@ -227,7 +232,7 @@ namespace   ft
 		{
 			if (pos == end())
 			 	return ;
-			std::cout << "erase node : " << *pos << std::endl;
+			// std::cout << "erase node : " << *pos << std::endl;
 			Node*	eraseN = pos.base();
 			Node*	parentN = eraseN->parent ;
 			Node*	replaceN = endN ;
@@ -309,7 +314,186 @@ namespace   ft
 			}
 			return	cnt ;
 		}
+
+		Node*	rightRotation(Node* cur)
+		{
+			Node*	replaceN = cur->left ;
+			
+			std::cout << ">>right rotation<<\n";
+			std::cout << "[before rotation]\n";
+			std::cout << "cur : \n";
+			std::cout << *cur;
+			std::cout << "replaceN : \n";
+			std::cout << *replaceN;
+			
+			
+			replaceN->parent = cur->parent;
+			cur->left = replaceN->right ;
+			cur->parent = replaceN ;
+			replaceN->right = cur;
+			cur->left->parent = cur;
+
+			checkHeight(cur);
+			checkHeight(replaceN);
+			
+
+			std::cout << "[after rotation]\n";
+			std::cout << "cur : \n";
+			std::cout << *cur;
+			std::cout << "replaceN : \n";
+			std::cout << *replaceN;
+			
+			return replaceN ;
+		}
+		
+		Node*	leftRotation(Node* cur)
+		{
+			Node*	replaceN = cur->right ;
+
+			std::cout << "-------\n";
+			std::cout << ">>left rotation<<\n";
+			std::cout << "[before rotation]\n";
+			std::cout << "cur : \n";
+			std::cout << *cur;
+			std::cout << "replaceN : \n";
+			std::cout << *replaceN;
+			std::cout << "-------\n\n";
+			
+			replaceN->parent = cur->parent;
+			cur->right = replaceN->left ;
+			cur->parent = replaceN ;
+			replaceN->left = cur;
+			cur->right->parent = cur;
+
+			checkHeight(cur);
+			checkHeight(replaceN);
+			
+			std::cout << "[after rotation]\n";
+			std::cout << "cur : \n";
+			std::cout << *cur;
+			std::cout << "replaceN : \n";
+			std::cout << *replaceN;
+			std::cout << "-------\n\n";
+			
+			return replaceN ;
+		}
+
+		void	checkHeight(Node* cur)
+		{
+			if (cur->left->height < cur->right->height)
+				cur->height = cur->right->height + 1 ;
+			else
+				cur->height = cur->left->height + 1 ;
+		}
+
+		int		checkBalanced(Node* cur)
+		{
+			return	(cur->left->height - cur->right->height) ;
+		}
+		
+		// >>> 위는 작업 완료. 아래는 작업 중. <<<
+		
+		void	insertBalancing(Node* cur)
+		{
+			if (cur == root)
+				return ;
+			Node*	parentN = cur->parent;
+			checkHeight(parentN);
+			if (parentN == root)
+				return ;
+			Node*	gpN = parentN->parent;
+			int	isBalanced = checkBalanced(gpN);
+			if (isBalanced > 1 || isBalanced < -1) // 밸런스가 깨진경우 rotation 진행
+			{
+				Node*	final = gpN->parent;
+				if (gpN == root)
+					root = rearrange(gpN, parentN, cur);
+				else if (gpN->parent->left == gpN)
+					final->left = rearrange(gpN, parentN, cur);
+				else if (gpN->parent->right == gpN)
+					final->right = rearrange(gpN, parentN, cur);
+			}
+			// 밸런스 체크 완료
+			// root 까지 계속 이어서 체크
+			insertBalancing(parentN);
+			return ;
+		}
+
+		Node*	rearrange(Node* gpN, Node* pN, Node* N)
+		{
+			if (gpN->left == pN && pN->left == N) // LL case -> rightRotation
+			{
+				return	rightRotation(gpN);
+			}
+			else if (gpN->left == pN && pN->right == N) // LR case -> left(pN) and right(gpN)
+			{
+				gpN->left = leftRotation(pN);
+				return	rightRotation(gpN);
+			}
+			else if (gpN->right == pN && pN->right == N) // RR case -> leftRotation
+			{
+				return	leftRotation(gpN);
+			}
+			else // RL case ->right(pN) and left(gpN)
+			{
+				gpN->right = rightRotation(pN);
+				return	leftRotation(gpN);
+			}
+		}
+
+		void	deleteRearrange(Node* cur)
+		{
+			cur = endN ;
+		}
+
+		void	_checkBalanced(Node* cur)
+		{
+			typename Node::size_type	leftHeight = cur->left->height;
+			typename Node::size_type	rightHeight = cur->right->height;
+			typename Node::size_type	diffHeight = leftHeight - rightHeight;
+			if (diffHeight > 1 || diffHeight < -1)
+			{
+				Node*	parentN = cur->parent;
+				if (leftHeight < rightHeight)
+				{
+					Node*	replaceN = cur->right;
+					if (replaceN->left != endN && replaceN->right == endN) // RL-rotation
+					{
+						cur->right = rightRotation(replaceN);
+						checkHeight(cur);
+					}
+					if (parentN != endN && parentN->left == &cur)
+						parentN->left = leftRotation(cur);
+					else if (parentN != endN && parentN->right == &cur)
+						parentN->right = leftRotation(cur);
+					else
+						root = leftRotation(cur);
+				}
+				else
+					rightRotation(cur);
+			}
+		}
 	};
+
+	template<typename T, typename Compare>
+	std::ostream&	operator<<(std::ostream& out, const binary_search_tree<T, Compare>& tree)
+	{
+		typedef	typename ft::binary_search_tree<T, Compare>::iterator	iterator;
+		
+		out << "this tree information\n";
+		iterator	i = tree.begin();
+		iterator	f = tree.end();
+		while (i != f)
+		{
+			out << *i << std::endl;
+			out << "-----\n";
+			i++;
+		}
+		out << *i << std::endl;
+		out << ">>> end <<<\n";
+		return out ;
+	}
+	
 }
 
 #endif

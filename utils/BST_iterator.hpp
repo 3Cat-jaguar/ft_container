@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:48:04 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/15 03:44:38 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/16 18:18:08 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,24 +22,26 @@ namespace	ft
 	template<typename T>
 	struct BST_Node
 	{
-		typedef	T	value_type;
+		typedef	T		value_type;
+		typedef	int		size_type;
 
 		value_type	value;
 		BST_Node*	parent;
 		BST_Node*	left;
 		BST_Node*	right;
+		size_type	height;
 		
 		BST_Node()
-		: value(value_type()), parent(nullptr), left(nullptr), right(nullptr)
+		: value(value_type()), parent(nullptr), left(nullptr), right(nullptr), height(0)
 		{}
 		BST_Node(BST_Node* parent = nullptr, BST_Node* left = nullptr, BST_Node* right = nullptr)
-		: value(value_type()), parent(parent), left(left), right(right)
+		: value(value_type()), parent(parent), left(left), right(right), height(0)
 		{}
 		BST_Node(const value_type& value, BST_Node* parent = nullptr, BST_Node* left = nullptr, BST_Node* right = nullptr)
-		: value(value_type(value)), parent(parent), left(left), right(right)
+		: value(value_type(value)), parent(parent), left(left), right(right), height(0)
 		{}
 		BST_Node(const BST_Node& copy)
-		:value(copy.value), parent(copy.parent), left(copy.left), right(copy.right)
+		:value(copy.value), parent(copy.parent), left(copy.left), right(copy.right), height(copy.height)
 		{}
 		BST_Node&	operator=(const BST_Node& copy)
 		{
@@ -47,6 +49,7 @@ namespace	ft
 			parent = copy.parent;
 			left = copy.left;
 			right = copy.right;
+			height = copy.height ;
 			return *this ;
 		}
 		virtual ~BST_Node(){}
@@ -61,6 +64,7 @@ namespace	ft
 			parent = copy.parent;
 			left = copy.left;
 			right = copy.right;
+			height = copy.height;
 			return *this ;
 		}
 		
@@ -68,7 +72,6 @@ namespace	ft
 		{
 			return	value == other.value ;
 		}
-
 		
 		bool	operator!=(const BST_Node& other)
 		{
@@ -137,6 +140,7 @@ namespace	ft
 	{
 		out << "this node information\n";
 		out << "\t> value : " << node.value << "\n";
+		out << "\t> height : " << node.height << "\n";
 		out << "\t> parent : " << (node.parent)->value << "\n";
 		out << "\t> left : " << (node.left)->value << "\n";
 		out << "\t> right : " << (node.right)->value << "\n";
