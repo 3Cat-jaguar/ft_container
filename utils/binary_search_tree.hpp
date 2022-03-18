@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/24 15:32:49 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/17 02:41:38 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/18 16:14:20 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,19 +188,19 @@ namespace   ft
 			if (len == 0)
 				root = newNode ;
 			len++;
-			std::cout << ">>insert " << value << " result <<\n" ;
+			// std::cout << ">>insert " << value << " result <<\n" ;
 			//rearrange
 			insertBalancing(newNode);
 			
-			//insert check
-			iterator	i = begin();
-			iterator	f = end();
-			while (i!=f)
-			{
-				std::cout << *i << std::endl;
-				i++;
-			}
-			std::cout << *i << "\t>>end\n\n";
+			// //insert check
+			// iterator	i = begin();
+			// iterator	f = end();
+			// while (i!=f)
+			// {
+			// 	std::cout << *i << std::endl;
+			// 	i++;
+			// }
+			// std::cout << *i << "\t>>end\n\n";
 			
 			return ft::pair<iterator, bool>(iterator(newNode, endN), true) ;
 		}
@@ -232,7 +232,7 @@ namespace   ft
 		{
 			if (pos == end())
 			 	return ;
-			// std::cout << "erase node : " << *pos << std::endl;
+			std::cout << "erase node : " << *pos << std::endl;
 			Node*	eraseN = pos.base();
 			Node*	parentN = eraseN->parent ;
 			Node*	replaceN = endN ;
@@ -240,18 +240,39 @@ namespace   ft
 			// 지울 노드가 parent 의 left 였다면 leftNode == true, right 였다면 false
 			if (eraseN->left == endN && eraseN->right == endN) // leaf 인 경우
 			{
+				// std::cout << ">>no child node erase<<\n";
+				// std::cout << "[before erase]\n";
+				// std::cout << "parentN : \n";
+				// std::cout << *parentN;
+				// std::cout << "eraseN : \n";
+				// std::cout << *eraseN;
+				
 				if (leftNode)
 					parentN->left = endN ;
 				else
 					parentN->right = endN ;
 				if (eraseN == root)
 					root = endN ;
+				
+				// std::cout << "[replace to erase]\n";
+				// std::cout << "parentN : \n";
+				// std::cout << *parentN;
+				// std::cout << "eraseN : \n";
+				// std::cout << *eraseN;
 			}
 			else if (eraseN->left != endN && eraseN->right != endN) // 자식 노드가 2개 있는 경우
 			{
 				replaceN = eraseN->left;
 				while (replaceN->right != endN)
 					replaceN = replaceN->right ;
+				// std::cout << ">>two child node erase<<\n";
+				// std::cout << "[before erase]\n";
+				// std::cout << "parentN : \n";
+				// std::cout << *parentN;
+				// std::cout << "eraseN : \n";
+				// std::cout << *eraseN;
+				// std::cout << "replaceN : \n";
+				// std::cout << *replaceN;
 				// left 노드 중 가장 큰 노드의 값으로 대체한뒤 가장 큰 left 노드를 제거한다.
 				if (replaceN->parent == eraseN)
 				{
@@ -260,15 +281,39 @@ namespace   ft
 				}
 				Node	tmp(*replaceN);
 				replaceN->copyExceptValue(*eraseN);
+				replaceN->left->parent = replaceN;
+				replaceN->right->parent = replaceN;
 				eraseN->copyExceptValue(tmp) ;
 				if (eraseN == root)
 					root = replaceN ;
+				else
+				{
+					if (leftNode)
+						parentN->left = replaceN ;
+					else
+						parentN->right = replaceN ;	
+				}
+				// std::cout << "[replace to erase]\n";
+				// std::cout << "parentN : \n";
+				// std::cout << *parentN;
+				// std::cout << "eraseN : \n";
+				// std::cout << *eraseN;
+				// std::cout << "replaceN : \n";
+				// std::cout << *replaceN;
 				erase(iterator(eraseN, endN));
 				return ;
 			}
 			else // 자식 노드가 1개인 경우
 			{
 				replaceN = (eraseN->left == endN) ? eraseN->right : eraseN->left ;
+				// std::cout << ">>one child node erase<<\n";
+				// std::cout << "[before erase]\n";
+				// std::cout << "parentN : \n";
+				// std::cout << *parentN;
+				// std::cout << "eraseN : \n";
+				// std::cout << *eraseN;
+				// std::cout << "replaceN : \n";
+				// std::cout << *replaceN;
 				if (leftNode)
 				{
 					if (parentN != endN)
@@ -283,12 +328,27 @@ namespace   ft
 				}
 				if (eraseN == root)
 					root = replaceN ;
+
+				// std::cout << "[replace to erase]\n";
+				// std::cout << "parentN : \n";
+				// std::cout << *parentN;
+				// std::cout << "eraseN : \n";
+				// std::cout << *eraseN;
+				// std::cout << "replaceN : \n";
+				// std::cout << *replaceN;
 			}
 			node_alloc.destroy(eraseN);
 			node_alloc.deallocate(eraseN, 1);
 			len--;
 			endN->parent = lastNode();
 			//정렬
+			// while (replaceN != parentN)
+			// {
+			// 	checkHeight(replaceN);
+			// 	replaceN = replaceN->parent ;
+			// }
+			deleteBalancing(parentN);
+			// std::cout << "end delete complete even balancing\n";
 		}
 		
 		void erase( iterator first, iterator last )
@@ -298,7 +358,7 @@ namespace   ft
 			while (next != end() && next != last)
 			{
 				tmp = next++;
-				std::cout << "tmp : " << *tmp << " , next : " << *next << std::endl;
+				// std::cout << "erase iterator\ntmp : " << *tmp << " , next : " << *next << std::endl;
 				erase(tmp);
 			}
 		}
@@ -319,12 +379,12 @@ namespace   ft
 		{
 			Node*	replaceN = cur->left ;
 			
-			std::cout << ">>right rotation<<\n";
-			std::cout << "[before rotation]\n";
-			std::cout << "cur : \n";
-			std::cout << *cur;
-			std::cout << "replaceN : \n";
-			std::cout << *replaceN;
+			// std::cout << ">>right rotation<<\n";
+			// std::cout << "[before rotation]\n";
+			// std::cout << "cur : \n";
+			// std::cout << *cur;
+			// std::cout << "replaceN : \n";
+			// std::cout << *replaceN;
 			
 			
 			replaceN->parent = cur->parent;
@@ -337,11 +397,11 @@ namespace   ft
 			checkHeight(replaceN);
 			
 
-			std::cout << "[after rotation]\n";
-			std::cout << "cur : \n";
-			std::cout << *cur;
-			std::cout << "replaceN : \n";
-			std::cout << *replaceN;
+			// std::cout << "[after rotation]\n";
+			// std::cout << "cur : \n";
+			// std::cout << *cur;
+			// std::cout << "replaceN : \n";
+			// std::cout << *replaceN;
 			
 			return replaceN ;
 		}
@@ -350,14 +410,14 @@ namespace   ft
 		{
 			Node*	replaceN = cur->right ;
 
-			std::cout << "-------\n";
-			std::cout << ">>left rotation<<\n";
-			std::cout << "[before rotation]\n";
-			std::cout << "cur : \n";
-			std::cout << *cur;
-			std::cout << "replaceN : \n";
-			std::cout << *replaceN;
-			std::cout << "-------\n\n";
+			// std::cout << "-------\n";
+			// std::cout << ">>left rotation<<\n";
+			// std::cout << "[before rotation]\n";
+			// std::cout << "cur : \n";
+			// std::cout << *cur;
+			// std::cout << "replaceN : \n";
+			// std::cout << *replaceN;
+			// std::cout << "-------\n\n";
 			
 			replaceN->parent = cur->parent;
 			cur->right = replaceN->left ;
@@ -368,18 +428,20 @@ namespace   ft
 			checkHeight(cur);
 			checkHeight(replaceN);
 			
-			std::cout << "[after rotation]\n";
-			std::cout << "cur : \n";
-			std::cout << *cur;
-			std::cout << "replaceN : \n";
-			std::cout << *replaceN;
-			std::cout << "-------\n\n";
+			// std::cout << "[after rotation]\n";
+			// std::cout << "cur : \n";
+			// std::cout << *cur;
+			// std::cout << "replaceN : \n";
+			// std::cout << *replaceN;
+			// std::cout << "-------\n\n";
 			
 			return replaceN ;
 		}
 
 		void	checkHeight(Node* cur)
 		{
+			if (cur == endN)
+				return ;
 			if (cur->left->height < cur->right->height)
 				cur->height = cur->right->height + 1 ;
 			else
@@ -391,7 +453,6 @@ namespace   ft
 			return	(cur->left->height - cur->right->height) ;
 		}
 		
-		// >>> 위는 작업 완료. 아래는 작업 중. <<<
 		
 		void	insertBalancing(Node* cur)
 		{
@@ -441,9 +502,32 @@ namespace   ft
 			}
 		}
 
-		void	deleteRearrange(Node* cur)
+		// >>> 위는 작업 완료. 아래는 작업 중. <<<
+		
+		void	deleteBalancing(Node* cur)
 		{
-			cur = endN ;
+			if (cur == endN)
+				return ;
+			checkHeight(cur);
+			// std::cout << "delete balancing target node : " << *cur << std::endl;
+			Node*	parentN = cur->parent;
+			int	isBalanced = checkBalanced(cur);
+			if (isBalanced > 1 || isBalanced < -1) // 밸런스가 깨진경우 rotation 진행
+			{
+				Node*	cN = (cur->left->height < cur->right->height) ? cur->right : cur->left;
+				Node*	gcN = (cN->left->height < cN->right->height) ? cN->right : cN->left;
+				if (cur == root)
+					root = rearrange(cur, cN, gcN);
+				else if (parentN->left == cur)
+					parentN->left = rearrange(cur, cN, gcN);
+				else if (parentN->right == cur)
+					parentN->right = rearrange(cur, cN, gcN);
+			}
+			
+			// 밸런스 체크 완료
+			// root 까지 계속 이어서 체크
+			deleteBalancing(parentN);
+			return ;
 		}
 
 		void	_checkBalanced(Node* cur)
