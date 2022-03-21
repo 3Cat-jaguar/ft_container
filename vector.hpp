@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:44:11 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/20 18:19:01 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/21 01:07:00 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,9 @@
 # include <memory> // for allocator
 # include "./utils/random_access_iterator.hpp"
 # include "./utils/reverse_iterator.hpp"
+# include "./utils/enable_if.hpp"
+# include "./utils/is_integral.hpp"
+
 
 namespace	ft
 {
@@ -47,12 +50,17 @@ namespace	ft
 
 	public:
 		//constructor
-		explicit	vector( const allocator_type& alloc = allocator_type() )
-		: alloc(alloc), elements(nullptr), start(nullptr), fin(nullptr), fin_cap(nullptr), len(0), cap(0)
-		{}
+		explicit	vector( const allocator_type& _alloc = allocator_type() )
+		: alloc(_alloc), len(0), cap(0)
+		{
+			elements = alloc.allocate(0);
+			start = elements;
+			fin = elements;
+			fin_cap = elements;
+		}
 		//val 에 있는 내용으로 초기화하여 생성
-		explicit	vector( size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type() )
-		: alloc(alloc), len(n), cap(0)
+		explicit	vector( size_type n, const value_type& val = value_type(), const allocator_type& _alloc = allocator_type() )
+		: alloc(_alloc), len(n), cap(0)
 		{
 			while (cap < len)
 			{
@@ -70,8 +78,8 @@ namespace	ft
 		}
 		//InputIter 의 first 부터 last 까지의 내용으로 초기화하여 생성
 		template <typename InputIter>
-		vector( InputIter first, InputIter last, const allocator_type& alloc = allocator_type() )
-		:alloc(alloc)
+		vector( InputIter first, InputIter last, const allocator_type& _alloc = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIter>::value, InputIter>::type* = nullptr )
+		:alloc(_alloc)
 		{
 			difference_type	diff = ft::distance<InputIter>(first, last);
 			len = static_cast<size_type>(diff);
@@ -122,7 +130,7 @@ namespace	ft
 		//	iterators
 		iterator	begin() // first element 의 iterator 를 반환
 		{
-			return iterator(start) ;
+				return iterator(start) ;
 		}
 		const_iterator	begin() const
 		{
@@ -196,7 +204,7 @@ namespace	ft
 			value_type* tmp = alloc.allocate(new_cap);
 			for(size_type i = 0; i < len ; i++)
 			{
-				tmp[i] = elements[i];
+				alloc.construct(tmp + i, elements[i]);
 			}
 			if (elements != nullptr)
 				alloc.deallocate(elements, cap);
@@ -276,9 +284,12 @@ namespace	ft
 			len = count ;
 		}
 		template< class InputIt >
-		void assign( InputIt first, InputIt last )
+		void assign( InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = nullptr )
 		{
 			clear() ;
+			// size_type	count = 0;
+			// for (InputIt tmp = first; tmp != last; tmp++, count++)
+			// 	;
 			difference_type diff = ft::distance<InputIt>(first, last);
 			size_type	count = static_cast<size_type>(diff);
 			if (cap < count)
@@ -303,12 +314,12 @@ namespace	ft
 		}
 		void push_back( const T& value )
 		{
-			if (len + 1 > cap)
-			{
-				size_type	new_cap = (cap * 2 > 0) ? (cap * 2) : 1;
-				this->reserve(new_cap);
-			}
-			this->insert(end(), value);
+			// if (len + 1 > cap)
+			// {
+			// 	size_type	new_cap = (cap * 2 > 0) ? (cap * 2) : 1;
+			// 	this->reserve(new_cap);
+			// }
+			insert(end(), value);
 		}
 		void pop_back()
 		{
@@ -318,20 +329,22 @@ namespace	ft
 		}
 		iterator insert( iterator pos, const T& value )
 		{
+			difference_type	diff = pos.base() - start;
 //			std::cout << ">> here is insert<<\n";
 			if (size() + 1 > cap)
 			{
 				size_type	new_cap = (cap * 2 > 0) ? (cap * 2) : 1;
 				this->reserve(new_cap);
 			}
+			pos = iterator(start + diff) ;
 			value_type* cur = fin;
 			if (cur < &(*pos))
 				pos = end();
-			while (cur > &(*pos))
+			while (pos != end() && cur > &(*pos))
 			{
 				alloc.construct(cur, *(cur - 1));
+				alloc.destroy(cur - 1);
 				cur--;
-				alloc.destroy(cur);
 			}
 			alloc.construct(cur, value);
 			len += 1;
@@ -340,20 +353,22 @@ namespace	ft
 		}
 		void insert( iterator pos, size_type count, const T& value )
 		{
+			difference_type	diff = pos.base() - start;
 //			std::cout << ">> here is insert<<\n";
 			while (size() + count > cap)
 			{
 				size_type	new_cap = (cap * 2 > 0) ? (cap * 2) : 1;
 				reserve(new_cap);
 			}
+			pos = iterator(start + diff) ;
 			value_type* cur = fin;
 			if (cur < &(*pos))
 				pos = end();
-			while (cur > &(*pos))
+			while (pos != end() && cur > &(*pos))
 			{
 				alloc.construct(cur + count - 1, *(cur - 1));
+				alloc.destroy(cur - 1);
 				cur--;
-				alloc.destroy(cur);
 			}
 			for (size_type i = 0; i < count; i++)
 			{
@@ -363,19 +378,21 @@ namespace	ft
 			fin = fin + count ;
 		}
 		template< class InputIt >
-		void insert( iterator pos, InputIt first, InputIt last )
+		void insert( iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = nullptr )
 		{
 			difference_type diff = ft::distance<InputIt>(first, last);
 			size_type	count = static_cast<size_type>(diff);
+			diff = pos.base() - start ;
 			while (size() + count > cap)
 			{
 				size_type	new_cap = (cap * 2 > 0) ? (cap * 2) : 1;
 				reserve(new_cap);
 			}
+			pos = iterator(start + diff) ;
 			value_type* cur = fin;
 			if (cur < &(*pos))
 				pos = end();
-			while (cur > &(*pos))
+			while (pos != end() && cur > &(*pos))
 			{
 				alloc.construct(cur + count - 1, *(cur - 1));
 				cur--;

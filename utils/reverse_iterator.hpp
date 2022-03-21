@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:48:04 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/16 18:09:03 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/21 00:15:48 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,17 +33,17 @@ namespace	ft
 		reverse_iterator() {}
 		explicit	reverse_iterator( iterator_type x ) { current = x ; }
 		template <typename U >
-		reverse_iterator( const reverse_iterator<U>& other ) { current = other.current ; }
+		reverse_iterator( const reverse_iterator<U>& other ) { current = other.base() ; }
 		~reverse_iterator() {}
 		template <typename U>
 		reverse_iterator&	operator=( const reverse_iterator<U>& other)
 		{
-			current = other.current ;
+			current = other.base() ;
 			return *this ;
 		}
 		iterator_type	base() const
 		{
-			return reverse_iterator<Iter>(current).current ;
+			return current ;
 		}
 		reference			operator*() const
 		{
@@ -110,25 +110,25 @@ namespace	ft
 	bool					operator<(const reverse_iterator<Iter>& lhs,
 										const reverse_iterator<Iter>& rhs)
 	{
-		return lhs.base() < rhs.base() ;
+		return lhs.base() > rhs.base() ;
 	}
 	template<typename Iter>
 	bool					operator<=(const reverse_iterator<Iter>& lhs,
 										const reverse_iterator<Iter>& rhs)
 	{
-		return lhs.base() <= rhs.base() ;
+		return lhs.base() >= rhs.base() ;
 	}
 	template<typename Iter>
 	bool					operator>(const reverse_iterator<Iter>& lhs,
 										const reverse_iterator<Iter>& rhs)
 	{
-		return lhs.base() > rhs.base() ;
+		return lhs.base() < rhs.base() ;
 	}
 	template<typename Iter>
 	bool					operator>=(const reverse_iterator<Iter>& lhs,
 										const reverse_iterator<Iter>& rhs)
 	{
-		return lhs.base() >= rhs.base() ;
+		return lhs.base() <= rhs.base() ;
 	}
 	template<typename Iter>
 	reverse_iterator<Iter>	operator+(
@@ -136,7 +136,7 @@ namespace	ft
 				const reverse_iterator<Iter>& rev_it)
 	{
 		reverse_iterator<Iter>	tmp(rev_it);
-		tmp -= n ;
+		tmp += n ;
 		return tmp ;
 	}
 	template<typename Iter>
@@ -145,9 +145,61 @@ namespace	ft
 				const reverse_iterator<Iter>& rev_it)
 	{
 		reverse_iterator<Iter>	tmp(rev_it);
-		tmp += n ;
+		tmp -= n ;
 		return tmp ;
 	}
+	
+	//------- compare Iterator and const_Iterator
+	
+	template<typename Iter, typename cIter>
+	bool					operator==(const reverse_iterator<Iter>& lhs,
+										const reverse_iterator<cIter>& rhs)
+	{
+		return lhs.base() == rhs.base() ;
+	}
+	template<typename Iter, typename cIter>
+	bool					operator!=(const reverse_iterator<Iter>& lhs,
+										const reverse_iterator<cIter>& rhs)
+	{
+		return lhs.base() != rhs.base() ;
+	}
+	template<typename Iter, typename cIter>
+	bool					operator<(const reverse_iterator<Iter>& lhs,
+										const reverse_iterator<cIter>& rhs)
+	{
+		return lhs.base() > rhs.base() ;
+	}
+	template<typename Iter, typename cIter>
+	bool					operator<=(const reverse_iterator<Iter>& lhs,
+										const reverse_iterator<cIter>& rhs)
+	{
+		return lhs.base() >= rhs.base() ;
+	}
+	template<typename Iter, typename cIter>
+	bool					operator>(const reverse_iterator<Iter>& lhs,
+										const reverse_iterator<cIter>& rhs)
+	{
+		return lhs.base() < rhs.base() ;
+	}
+	template<typename Iter, typename cIter>
+	bool					operator>=(const reverse_iterator<Iter>& lhs,
+										const reverse_iterator<cIter>& rhs)
+	{
+		return lhs.base() <= rhs.base() ;
+	}
+
+	template<typename T>
+	typename reverse_iterator<T>::difference_type	operator-(const reverse_iterator<T>& lhs, const reverse_iterator<T>& rhs)
+	{
+		return	rhs.base() - lhs.base() ;
+	}
+
+	template<typename T, typename cT>
+	typename reverse_iterator<T>::difference_type	operator-(const reverse_iterator<T>& lhs, const reverse_iterator<cT>& rhs)
+	{
+		return	rhs.base() - lhs.base() ;
+	}
+	
 }
 
 
