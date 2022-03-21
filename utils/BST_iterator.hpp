@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:48:04 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/16 18:18:08 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/21 18:37:01 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,10 @@ namespace	ft
 			return	value >= other.value ;
 		}
 	};
+	
+	template<typename Node, typename Compare>
+	class	BST_const_iterator;
+
 
 	template<typename T>
 	bool	operator==(const BST_Node<T>& lhs, const BST_Node<T>& rhs)
@@ -151,20 +155,20 @@ namespace	ft
 	class	BST_iterator : ft::iterator<ft::bidirectional_iterator_tag, Node>
 	{
 	public:
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, Node>::iterator_category	iterator_category;
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, Node>::value_type			value_type;
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, Node>::difference_type	difference_type;
-		typedef Node*			pointer;
-		typedef Node&			reference;
-	protected:
-		pointer	curN ;
-		pointer	endN ;
+		typedef	typename Node::value_type	value_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::iterator_category	iterator_category;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type	difference_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer			pointer;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference			reference;
+	// protected:
+		Node*	curN ;
+		Node*	endN ;
 		Compare	comp ;
-	public:
+	// public:
 		BST_iterator()
 		: curN(nullptr), endN(nullptr), comp(Compare())
 		{}
-		explicit	BST_iterator(pointer curN, pointer endN = nullptr, Compare comp = Compare())
+		explicit	BST_iterator(Node* curN, Node* endN = nullptr, Compare comp = Compare())
 		: curN(curN), endN(endN), comp(comp)
 		{}
 		BST_iterator( const BST_iterator& other )
@@ -177,22 +181,22 @@ namespace	ft
 			comp = other.comp ;
 			return *this ;
 		}
-		pointer	base() const
+		Node*	base() const
 		{
 			return curN ;
 		}
 		reference			operator*() const
 		{
-			return *curN ;
+			return curN->value ;
 		}
 		pointer				operator->() const
 		{
-			return &(operator*()) ;
+			return &(curN->value) ;
 		}
 		
 		BST_iterator&	operator++()
 		{
-			pointer	tmp = curN;
+			Node*	tmp = curN;
 			//std::cout << "this Node : " << tmp << "//";
 			if (curN->right != endN)
 			{
@@ -208,8 +212,8 @@ namespace	ft
 					tmp = tmp->parent ;
 				curN = tmp ;
 			}
-			else
-				curN = curN->parent ;
+			// else
+			// 	curN = curN->parent ;
 			return *this ;
 		}
 		BST_iterator	operator++(int)
@@ -220,7 +224,7 @@ namespace	ft
 		}
 		BST_iterator&	operator--()
 		{
-			pointer	tmp = curN;
+			Node*	tmp = curN;
 			if (curN->left != endN)
 			{
 				tmp = curN->left ;
@@ -235,7 +239,7 @@ namespace	ft
 					tmp = tmp->parent ;
 				curN = tmp ;
 			}
-			else
+			else // curN == endN 일 때 제일 큰 node 로 이동.
 				curN = curN->parent ;
 			return *this ;
 		}
@@ -248,44 +252,70 @@ namespace	ft
 
 		// operator	ft::BST_const_iterator<Node, Compare> () const
 		// {
-		// 	return	ft::BST_const_iterator<Node, Compare>(curN, endN) ;
+		// 	return	ft::BST_const_iterator<const Node, Compare>(curN, endN) ;
 		// }
 
 	};
 	//non-member function operators
 	template<typename Node, typename Compare>
-	bool					operator==(const BST_iterator<Node, Compare>& lhs,
-										const BST_iterator<Node, Compare>& rhs)
+	bool					operator==(const BST_iterator<Node, Compare>& lhs, const BST_iterator<Node, Compare>& rhs)
 	{
 		return *(lhs.base()) == *(rhs.base()) ;
 	}
 	template<typename Node, typename Compare>
-	bool					operator!=(const BST_iterator<Node, Compare>& lhs,
-										const BST_iterator<Node, Compare>& rhs)
+	bool					operator!=(const BST_iterator<Node, Compare>& lhs, const BST_iterator<Node, Compare>& rhs)
 	{
 		return !(lhs == rhs) ;
 	}
-	template<typename Node>
-	bool					operator<(const BST_iterator<Node>& lhs,
-										const BST_iterator<Node>& rhs)
+	template<typename Node, typename Compare>
+	bool					operator<(const BST_iterator<Node, Compare>& lhs, const BST_iterator<Node, Compare>& rhs)
 	{
 		return  *lhs.base() < *rhs.base() ;
 	}
-	template<typename Node>
-	bool					operator<=(const BST_iterator<Node>& lhs,
-										const BST_iterator<Node>& rhs)
+	template<typename Node, typename Compare>
+	bool					operator<=(const BST_iterator<Node, Compare>& lhs, const BST_iterator<Node, Compare>& rhs)
 	{
 		return !(*rhs.base() < *lhs.base()) ;
 	}
-	template<typename Node>
-	bool					operator>(const BST_iterator<Node>& lhs,
-										const BST_iterator<Node>& rhs)
+	template<typename Node, typename Compare>
+	bool					operator>(const BST_iterator<Node, Compare>& lhs, const BST_iterator<Node, Compare>& rhs)
 	{
 		return *rhs.base() < *lhs.base() ;
 	}
-	template<typename Node>
-	bool					operator>=(const BST_iterator<Node>& lhs,
-										const BST_iterator<Node>& rhs)
+	template<typename Node, typename Compare>
+	bool					operator>=(const BST_iterator<Node, Compare>& lhs, const BST_iterator<Node, Compare>& rhs)
+	{
+		return !(*lhs.base() < *rhs.base()) ;
+	}
+
+	//compare iterator and const iterator
+	template<typename Node, typename Compare>
+	bool					operator==(const BST_iterator<Node, Compare>& lhs, const BST_const_iterator<Node, Compare>& rhs)
+	{
+		return *(lhs.base()) == *(rhs.base()) ;
+	}
+	template<typename Node, typename Compare>
+	bool					operator!=(const BST_iterator<Node, Compare>& lhs, const BST_const_iterator<Node, Compare>& rhs)
+	{
+		return !(lhs == rhs) ;
+	}
+	template<typename Node, typename Compare>
+	bool					operator<(const BST_iterator<Node, Compare>& lhs, const BST_const_iterator<Node, Compare>& rhs)
+	{
+		return  *lhs.base() < *rhs.base() ;
+	}
+	template<typename Node, typename Compare>
+	bool					operator<=(const BST_iterator<Node, Compare>& lhs, const BST_const_iterator<Node, Compare>& rhs)
+	{
+		return !(*rhs.base() < *lhs.base()) ;
+	}
+	template<typename Node, typename Compare>
+	bool					operator>(const BST_iterator<Node, Compare>& lhs, const BST_const_iterator<Node, Compare>& rhs)
+	{
+		return *rhs.base() < *lhs.base() ;
+	}
+	template<typename Node, typename Compare>
+	bool					operator>=(const BST_iterator<Node, Compare>& lhs, const BST_const_iterator<Node, Compare>& rhs)
 	{
 		return !(*lhs.base() < *rhs.base()) ;
 	}
@@ -295,24 +325,31 @@ namespace	ft
 	class	BST_const_iterator : ft::iterator<ft::bidirectional_iterator_tag, Node>
 	{
 	public:
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, Node>::iterator_category	iterator_category;
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, Node>::value_type			value_type;
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, Node>::difference_type	difference_type;
-		typedef Node*			pointer;
-		typedef Node&			reference;
-	protected:
-		pointer	curN ;
-		pointer	endN ;
+		typedef	typename Node::value_type	value_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, const value_type>::iterator_category	iterator_category;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, const value_type>::difference_type	difference_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, const value_type>::pointer			pointer;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, const value_type>::reference			reference;
+	// protected:
+		Node*	curN ;
+		Node*	endN ;
 		Compare	comp ;
-	public:
+	// public:
 		BST_const_iterator()
 		: curN(nullptr), endN(nullptr), comp(Compare())
 		{}
-		explicit	BST_const_iterator(pointer curN, pointer endN = nullptr, Compare comp = Compare())
+		explicit	BST_const_iterator(Node* curN, Node* endN = nullptr, Compare comp = Compare())
 		: curN(curN), endN(endN), comp(comp)
 		{}
 		BST_const_iterator( const BST_const_iterator& other )
 		{ *this = other ; }
+		BST_const_iterator( const BST_iterator<Node, Compare>& other )
+		{
+			curN = other.curN ;
+			endN = other.endN ;
+			comp = other.comp ;
+		}
+		
 		virtual ~BST_const_iterator() {}
 		BST_const_iterator&	operator=( const BST_const_iterator& other)
 		{
@@ -321,24 +358,31 @@ namespace	ft
 			comp = other.comp ;
 			return *this ;
 		}
-		pointer	base() const
+		Node*	base() const
 		{
 			return curN ;
 		}
-		
+		// Node*	getEndN() const
+		// {
+		// 	return	endN ;
+		// }
+		// Compare	getCompare() const
+		// {
+		// 	return	comp ;
+		// }
 		reference			operator*() const
 		{
-			return *curN ;
+			return curN->value ;
 		}
-		
 		pointer				operator->() const
 		{
-			return &(operator*()) ;
+			return &(curN->value) ;
+			// return 0;
 		}
 		
 		BST_const_iterator&	operator++()
 		{
-			pointer	tmp = curN;
+			Node*	tmp = curN;
 			//std::cout << "this Node : " << tmp << "//";
 			if (curN->right != endN)
 			{
@@ -354,8 +398,8 @@ namespace	ft
 					tmp = tmp->parent ;
 				curN = tmp ;
 			}
-			else
-				curN = curN->right ;
+			// else // curN == endN
+			// 	curN = curN->parent ;
 			return *this ;
 		}
 		BST_const_iterator	operator++(int)
@@ -366,7 +410,7 @@ namespace	ft
 		}
 		BST_const_iterator&	operator--()
 		{
-			pointer	tmp = curN;
+			Node*	tmp = curN;
 			if (curN->left != endN)
 			{
 				tmp = curN->left ;
@@ -382,7 +426,7 @@ namespace	ft
 				curN = tmp ;
 			}
 			else
-				curN = curN->left ;
+				curN = curN->parent ;
 			return *this ;
 		}
 		BST_const_iterator	operator--(int)
@@ -392,41 +436,72 @@ namespace	ft
 			return tmp ;
 		}
 
+		// operator	ft::BST_iterator<Node, Compare> ()
+		// {
+		// 	return	ft::BST_iterator<Node, Compare>(curN, endN) ;
+		// }
+
 	};
 	//non-member function operators
 	template<typename Node, typename Compare>
-	bool					operator==(const BST_const_iterator<Node, Compare>& lhs,
-										const BST_const_iterator<Node, Compare>& rhs)
+	bool					operator==(const BST_const_iterator<Node, Compare>& lhs, const BST_const_iterator<Node, Compare>& rhs)
 	{
 		return *lhs.base() == *rhs.base() ;
 	}
 	template<typename Node, typename Compare>
-	bool					operator!=(const BST_const_iterator<Node, Compare>& lhs,
-										const BST_const_iterator<Node, Compare>& rhs)
+	bool					operator!=(const BST_const_iterator<Node, Compare>& lhs, const BST_const_iterator<Node, Compare>& rhs)
 	{
 		return *lhs.base() != *rhs.base() ;
 	}
 	template<typename Node, typename Compare>
-	bool					operator<(const BST_const_iterator<Node, Compare>& lhs,
-										const BST_const_iterator<Node, Compare>& rhs)
+	bool					operator<(const BST_const_iterator<Node, Compare>& lhs, const BST_const_iterator<Node, Compare>& rhs)
 	{
 		return  *lhs.base() < *rhs.base() ;
 	}
-	template<typename Node>
-	bool					operator<=(const BST_const_iterator<Node>& lhs,
-										const BST_const_iterator<Node>& rhs)
+	template<typename Node, typename Compare>
+	bool					operator<=(const BST_const_iterator<Node, Compare>& lhs, const BST_const_iterator<Node, Compare>& rhs)
 	{
 		return !(*rhs.base() < *lhs.base()) ;
 	}
-	template<typename Node>
-	bool					operator>(const BST_const_iterator<Node>& lhs,
-										const BST_const_iterator<Node>& rhs)
+	template<typename Node, typename Compare>
+	bool					operator>(const BST_const_iterator<Node, Compare>& lhs, const BST_const_iterator<Node, Compare>& rhs)
 	{
 		return *rhs.base() < *lhs.base() ;
 	}
-	template<typename Node>
-	bool					operator>=(const BST_const_iterator<Node>& lhs,
-										const BST_const_iterator<Node>& rhs)
+	template<typename Node, typename Compare>
+	bool					operator>=(const BST_const_iterator<Node, Compare>& lhs, const BST_const_iterator<Node, Compare>& rhs)
+	{
+		return !(*lhs.base() < *rhs.base()) ;
+	}
+
+	//compare const iterator and iterator
+	template<typename Node, typename Compare>
+	bool					operator==(const BST_const_iterator<Node, Compare>& lhs, const BST_iterator<Node, Compare>& rhs)
+	{
+		return *lhs.base() == *rhs.base() ;
+	}
+	template<typename Node, typename Compare>
+	bool					operator!=(const BST_const_iterator<Node, Compare>& lhs, const BST_iterator<Node, Compare>& rhs)
+	{
+		return *lhs.base() != *rhs.base() ;
+	}
+	template<typename Node, typename Compare>
+	bool					operator<(const BST_const_iterator<Node, Compare>& lhs, const BST_iterator<Node, Compare>& rhs)
+	{
+		return  *lhs.base() < *rhs.base() ;
+	}
+	template<typename Node, typename Compare>
+	bool					operator<=(const BST_const_iterator<Node, Compare>& lhs, const BST_iterator<Node, Compare>& rhs)
+	{
+		return !(*rhs.base() < *lhs.base()) ;
+	}
+	template<typename Node, typename Compare>
+	bool					operator>(const BST_const_iterator<Node, Compare>& lhs, const BST_iterator<Node, Compare>& rhs)
+	{
+		return *rhs.base() < *lhs.base() ;
+	}
+	template<typename Node, typename Compare>
+	bool					operator>=(const BST_const_iterator<Node, Compare>& lhs, const BST_iterator<Node, Compare>& rhs)
 	{
 		return !(*lhs.base() < *rhs.base()) ;
 	}

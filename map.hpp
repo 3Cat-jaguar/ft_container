@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:44:11 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/15 14:45:24 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/21 22:22:44 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,10 @@
 # include "./utils/less.hpp"
 # include "./utils/BST_iterator.hpp"
 # include "./utils/reverse_iterator.hpp"
+# include "./utils/enable_if.hpp"
+# include "./utils/is_integral.hpp"
+# include "./utils/equal.hpp"
+# include "./utils/lexicographical_compare.hpp"
 
 namespace	ft
 {
@@ -49,9 +53,10 @@ namespace	ft
 		{
 		protected:
 			Compare		comp; // ft::less<Key> 을 저장한다.
-			value_compare(Compare c = key_compare()) : comp(c) {}
-			~value_compare(){}
+			value_compare(Compare c) : comp(c) {}
+			// ~value_compare(){}
 		public:
+			value_compare() {}
 			bool    operator()(const value_type& lhs, const value_type& rhs)
 			{
 				//pair 구조체를 받은 뒤 ft::less<Key> 에서 lhs, rhs 의 key 값을 비교한다.
@@ -63,6 +68,7 @@ namespace	ft
 	private:
 		allocator_type			alloc;
 		key_compare				comp;
+	public:
 		ft::binary_search_tree<value_type, Compare>    tree;
 
 	public:
@@ -111,7 +117,7 @@ namespace	ft
 			iterator	k = find(key);
 			if (k == end())
 				throw (std::out_of_range("not found key") ) ;
-			return	(k->value).second ;
+			return	k->second ;
 		}
 		
 		const T& at( const Key& key ) const
@@ -119,7 +125,7 @@ namespace	ft
 			iterator	k = find(key);
 			if (k == end())
 				throw (std::out_of_range("not found key") ) ;
-			return	(k->value).second ;
+			return	k->second ;
 		}
 		
 		T& operator[]( const Key& key )
@@ -129,7 +135,7 @@ namespace	ft
 			{
 				k = insert(value_type(key)).first;
 			}
-			return	(k->value).second ;
+			return	k->second ;
 		}
 		
 		iterator begin()
@@ -189,12 +195,6 @@ namespace	ft
 		
 		void clear()
 		{
-			// iterator	i = begin();
-			// while (*i != tree.endN)
-			// {
-			// 	erase(i);
-			// 	i++;
-			// }
 			tree.clear();
 		}
 		
@@ -202,9 +202,14 @@ namespace	ft
 		{
 			return	tree.insert(value) ;
 		}
+
+		iterator insert( iterator hint, const value_type& value )
+		{
+			return	tree.insert(hint, value) ;
+		}
 		
 		template< class InputIt >
-		void insert( InputIt first, InputIt last )
+		void insert( InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = nullptr )
 		{
 			tree.insert(first, last) ;
 		}
@@ -243,7 +248,8 @@ namespace	ft
 		
 		const_iterator find( const Key& key ) const
 		{
-			return	tree.find(value_type(key)) ;
+			iterator result = tree.find(value_type(key));	
+			return	const_iterator(result) ;
 		}
 		
 		ft::pair<iterator,iterator> equal_range( const Key& key )
@@ -281,47 +287,50 @@ namespace	ft
 			return comp ;
 		}
 		
-		typename ft::map<Key, T>::value_compare value_comp() const
+		value_compare value_comp() const
 		{
 			return value_compare() ;
 		}
 		
-		template< class K, class U, class Comp, class Al >
-		friend bool operator==( const ft::map<K,U,Comp,Al>& lhs, const ft::map<K,U,Comp,Al>& rhs );
-
-		template< class K, class U, class Comp, class Al >
-		friend bool operator!=( const ft::map<K,U,Comp,Al>& lhs, const ft::map<K,U,Comp,Al>& rhs );
-
-		template< class K, class U, class Comp, class Al >
-		friend bool operator< ( const ft::map<K,U,Comp,Al>& lhs, const ft::map<K,U,Comp,Al>& rhs );
-
-		template< class K, class U, class Comp, class Al >
-		friend bool operator<=( const ft::map<K,U,Comp,Al>& lhs, const ft::map<K,U,Comp,Al>& rhs );
-
-		template< class K, class U, class Comp, class Al >
-		friend bool operator> ( const ft::map<K,U,Comp,Al>& lhs, const ft::map<K,U,Comp,Al>& rhs );
-
-		template< class K, class U, class Comp, class Al >
-		friend bool operator>=( const ft::map<K,U,Comp,Al>& lhs, const ft::map<K,U,Comp,Al>& rhs ); 
 	};
 	
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator==( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ); 
+	bool operator==( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs )
+	{
+		if (lhs.size() != rhs.size())
+			return false ;
+		return	ft::equal(lhs.begin(), lhs.end(), rhs.begin()) ;
+	}
 	
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator!=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ); 
+	bool operator!=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs )
+	{
+		return !(lhs == rhs) ;
+	}
 	
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator< ( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ); 
+	bool operator< ( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs )
+	{
+		return	ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()) ;
+	}
 	
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator<=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ); 
+	bool operator<=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs )
+	{
+		return	!(rhs < lhs);
+	}
 	
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator> ( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ); 
+	bool operator> ( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs )
+	{
+		return	(rhs < lhs) ;
+	}
 	
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator>=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ); 
+	bool operator>=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs )
+	{
+		return	!( lhs < rhs ) ;
+	}
 	
 	template< class Key, class T, class Compare, class Alloc >
 	void swap( ft::map<Key,T,Compare,Alloc>& lhs, ft::map<Key,T,Compare,Alloc>& rhs );

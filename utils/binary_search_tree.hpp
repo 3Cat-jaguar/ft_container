@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/24 15:32:49 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/18 16:14:20 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/22 00:56:25 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,10 @@
 # include "./BST_iterator.hpp"
 # include "./reverse_iterator.hpp"
 # include "./pair.hpp"
+# include "./enable_if.hpp"
+# include "./is_integral.hpp"
+# include "./equal.hpp"
+# include "./lexicographical_compare.hpp"
 # include <memory>
 
 namespace   ft
@@ -75,13 +79,23 @@ namespace   ft
 		
 		binary_search_tree& operator=(const binary_search_tree& copy)
 		{
-			root = node_alloc.allocate(1);
-			node_alloc.construct(root, *(copy.root));
-			endN = node_alloc.allocate(1);
-			node_alloc.construct(endN, *(copy.endN));
+			if (*this != copy)
+				copyOperator(copy.root);
+			return *this ;
 		}
 
-		Node*		beginNode()
+		void	copyOperator(const Node* node)
+		{
+			if (node == endN)
+				return ;
+			insert(node->value);
+			if (node->left != endN)
+				copyOperator(node->left);
+			if (node->right != endN)
+				copyOperator(node->right);
+		}
+
+		Node*		beginNode() const
 		{
 			Node*	tmp = root;
 			while (tmp->left != endN)
@@ -92,7 +106,7 @@ namespace   ft
 			return tmp ;
 		}
 		
-		Node*	lastNode()
+		Node*	lastNode() const
 		{
 			Node*	tmp = root;
 			while (tmp->right != endN)
@@ -102,7 +116,7 @@ namespace   ft
 			return tmp ;
 		}
 
-		Node*	endNode()
+		Node*	endNode() const
 		{
 			return	endN ;
 		}
@@ -127,7 +141,7 @@ namespace   ft
 			return const_iterator(endN, endN) ;
 		}
 		
-		iterator	find(const T& key)
+		iterator	find(const T& key) const
 		{
 			Node*	i = root ;
 			while (i != endN)
@@ -143,9 +157,25 @@ namespace   ft
 			return iterator(i, endN) ;
 		}
 
-		iterator	find(const Node& keyN)
+		iterator	find(const Node& keyN) const
 		{
 			return	find(*keyN) ;
+		}
+
+		size_type	count(const T& key) const
+		{
+			Node*	i = root ;
+			while (i != endN)
+			{
+				// std::cout << "this Node : " << i->value << "//\n";
+				if (key_comp((i->value).first, key.first))
+					i = i->right ;
+				else if (key_comp(key.first, (i->value).first))
+					i = i->left ;
+				else
+					return 1 ;
+			}
+			return 0 ;
 		}
 		
 		ft::pair<iterator, bool>	insert(const T& value)
@@ -155,6 +185,7 @@ namespace   ft
 			bool	moveLeft = true ;
 			bool	biggest = true ;
 
+			// std::cout << "start insert value : " << value.first << "\n";
 			while (tmp != endN)
 			{
 				if (key_comp((tmp->value).first, value.first)) // value 가 큰 경우
@@ -171,8 +202,9 @@ namespace   ft
 					biggest = false ;
 				}
 				else // tmp 의 key 와 value 의 key 가 같은 경우
-					return ft::pair<iterator, bool>(end(), false) ;
+					return ft::pair<iterator, bool>(iterator(tmp, endN), false) ;
 			}
+			// std::cout << "find position\n";
 			Node*	newNode = node_alloc.allocate(1);
 			node_alloc.construct(newNode, Node(value, prev, endN, endN)) ;
 			if (prev != endN)
@@ -184,7 +216,9 @@ namespace   ft
 			}
 			if (biggest)
 				endN->parent = newNode ;
-			
+			// std::cout << "1) endN information : "
+			// << endN->value << " , "
+			// << endN->parent->value << "\n";
 			if (len == 0)
 				root = newNode ;
 			len++;
@@ -192,6 +226,12 @@ namespace   ft
 			//rearrange
 			insertBalancing(newNode);
 			
+			// if (biggest)
+			// 	endN->parent = newNode ;
+				
+			// std::cout << "2) endN information : "
+			// << endN->value << " , "
+			// << endN->parent->value << "\n";
 			// //insert check
 			// iterator	i = begin();
 			// iterator	f = end();
@@ -205,12 +245,130 @@ namespace   ft
 			return ft::pair<iterator, bool>(iterator(newNode, endN), true) ;
 		}
 
-		size_type	size()
+		iterator insert( iterator hint, const T& value )
+		{
+			if (len == 0)
+			{
+				Node*	newNode = node_alloc.allocate(1);
+				node_alloc.construct(newNode, Node(value, endN, endN, endN)) ;
+				endN->parent = newNode ;
+				root = newNode;
+				len++;
+				return iterator(newNode, endN) ;
+			}
+			if (hint.base() == endN)
+				hint--;
+			Node*	newNode;
+			if(key_comp(hint->first, value.first))
+			{
+				// std::cout << "here! 1\n";
+				while (hint.base() != endN)
+				{
+					
+					if (key_comp(hint->first, value.first))
+						hint++ ;
+					else if (hint->first == value.first)
+						return hint ;
+					else
+						break ;
+				}
+				Node*	hintN = hint.base();
+				newNode = node_alloc.allocate(1);
+				node_alloc.construct(newNode, Node(value, endN, endN, endN)) ;
+				if (hintN == endN)
+				{
+					// std::cout << "endN : \n";
+					// std::cout << *hintN << " , "
+					// << *(hintN->parent) << " , "
+					// << *(hintN->left) << " , "
+					// << *(hintN->right) << "\n";
+					hintN->parent->right = newNode;
+					newNode->parent = hintN->parent ;
+					endN->parent = newNode;
+				}
+				else if (hintN->left == endN)
+				{
+					hintN->left = newNode;
+					newNode->parent = hintN;
+				}
+				else
+				{
+					--hint;
+					hintN = hint.base();
+					hintN->right = newNode;
+					newNode->parent = hintN;
+				}
+				// std::cout << *newNode << " , "
+				// << *(newNode->parent) << " , "
+				// << *(newNode->left) << " , "
+				// << *(newNode->right) << "\n";
+			}
+			else if (key_comp(value.first, hint->first))
+			{
+				// std::cout << "here! 2\n";
+				iterator	prev = hint;
+				while (hint.base() != endN)
+				{
+					prev = hint;
+					if (key_comp(value.first, hint->first))
+						hint--;
+					else if (hint->first == value.first)
+						return hint ;
+					else
+						break ;
+				}
+				Node*	hintN = hint.base();
+				newNode = node_alloc.allocate(1);
+				node_alloc.construct(newNode, Node(value, endN, endN, endN)) ;
+				if (hintN == endN)
+				{
+					Node*	prevN = prev.base();
+					prevN->left = newNode;
+					newNode->parent = prevN ;
+				}
+				else if (hintN->right == endN)
+				{
+					hintN->right = newNode;
+					newNode->parent = hintN;
+				}
+				else
+				{
+					Node*	prevN = prev.base();
+					prevN->left = newNode;
+					newNode->parent = hintN;
+				}
+			}
+			else
+				return hint ;
+			// std::cout << "here! 3\n";
+			// std::cout << *newNode << " , "
+			// 	<< *(newNode->parent) << " , "
+			// 	<< *(newNode->left) << " , "
+			// 	<< *(newNode->right) << "\n";
+			len++;
+			insertBalancing(newNode);
+			// std::cout << "here! 4\n";
+			return iterator(newNode, endN);
+		}
+
+		template< class InputIt >
+		void insert( InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = nullptr )
+		{
+			// std::cout << "iterator start\n";
+			for(; first != last; first++)
+			{
+				insert(*first);	
+			}
+			// std::cout << "iterator end\n";
+			// tree.insert(first, last) ;
+		}
+
+		size_type	size() const
 		{
 			return	len ;
 		}
 
-		size_type	max_size()
+		size_type	max_size() const
 		{
 			return	node_alloc.max_size() ;
 		}
@@ -232,7 +390,7 @@ namespace   ft
 		{
 			if (pos == end())
 			 	return ;
-			std::cout << "erase node : " << *pos << std::endl;
+			// std::cout << "erase node : " << *pos << std::endl;
 			Node*	eraseN = pos.base();
 			Node*	parentN = eraseN->parent ;
 			Node*	replaceN = endN ;
@@ -391,7 +549,8 @@ namespace   ft
 			cur->left = replaceN->right ;
 			cur->parent = replaceN ;
 			replaceN->right = cur;
-			cur->left->parent = cur;
+			if (cur->left != endN)
+				cur->left->parent = cur;
 
 			checkHeight(cur);
 			checkHeight(replaceN);
@@ -423,7 +582,8 @@ namespace   ft
 			cur->right = replaceN->left ;
 			cur->parent = replaceN ;
 			replaceN->left = cur;
-			cur->right->parent = cur;
+			if (cur->right != endN)
+				cur->right->parent = cur ;
 
 			checkHeight(cur);
 			checkHeight(replaceN);
@@ -459,11 +619,14 @@ namespace   ft
 			if (cur == root)
 				return ;
 			Node*	parentN = cur->parent;
+			// std::cout << "here! 1\n";
 			checkHeight(parentN);
 			if (parentN == root)
 				return ;
+			// std::cout << "here! 2\n";
 			Node*	gpN = parentN->parent;
 			int	isBalanced = checkBalanced(gpN);
+			// std::cout << "here! 3\n";
 			if (isBalanced > 1 || isBalanced < -1) // 밸런스가 깨진경우 rotation 진행
 			{
 				Node*	final = gpN->parent;
@@ -502,7 +665,6 @@ namespace   ft
 			}
 		}
 
-		// >>> 위는 작업 완료. 아래는 작업 중. <<<
 		
 		void	deleteBalancing(Node* cur)
 		{
@@ -530,35 +692,296 @@ namespace   ft
 			return ;
 		}
 
-		void	_checkBalanced(Node* cur)
+		// >>> 위는 작업 완료. 아래는 작업 중. <<<
+		ft::pair<iterator,iterator> equal_range( const T& key )
 		{
-			typename Node::size_type	leftHeight = cur->left->height;
-			typename Node::size_type	rightHeight = cur->right->height;
-			typename Node::size_type	diffHeight = leftHeight - rightHeight;
-			if (diffHeight > 1 || diffHeight < -1)
+			Node*	cur = root ;
+			Node*	prev = cur;
+			bool	biggest = true ;
+			bool	smallest = true ;
+			while (cur != endN)
 			{
-				Node*	parentN = cur->parent;
-				if (leftHeight < rightHeight)
+				// std::cout << "this Node : " << cur->value << "//\n";
+				if (key_comp((cur->value).first, key.first))
 				{
-					Node*	replaceN = cur->right;
-					if (replaceN->left != endN && replaceN->right == endN) // RL-rotation
-					{
-						cur->right = rightRotation(replaceN);
-						checkHeight(cur);
-					}
-					if (parentN != endN && parentN->left == &cur)
-						parentN->left = leftRotation(cur);
-					else if (parentN != endN && parentN->right == &cur)
-						parentN->right = leftRotation(cur);
-					else
-						root = leftRotation(cur);
+					smallest = false ;
+					prev = cur;
+					cur = cur->right ;
+				}
+				else if (key_comp(key.first, (cur->value).first))
+				{
+					biggest = false ;
+					prev = cur;
+					cur = cur->left ;
 				}
 				else
-					rightRotation(cur);
+				{
+					iterator second = iterator(cur, endN);
+					iterator first = second++;
+					return ft::pair<iterator, iterator>(first, second) ;
+				}
 			}
+			if (smallest)
+			{
+				return ft::pair<iterator, iterator>(begin(), begin()) ;
+			}
+			if (biggest)
+			{
+				return ft::pair<iterator, iterator>(end(), end()) ;
+			}
+			iterator	prevIter(prev, endN);
+			if (key_comp((prev->value).first, key.first))
+				prevIter++;
+			return ft::pair<iterator, iterator>(prevIter, prevIter) ;
 		}
+
+		ft::pair<const_iterator,const_iterator> equal_range( const T& key ) const
+		{
+			Node*	cur = root ;
+			Node*	prev = cur;
+			bool	biggest = true ;
+			bool	smallest = true ;
+			while (cur != endN)
+			{
+				// std::cout << "this Node : " << cur->value << "//\n";
+				if (key_comp((cur->value).first, key.first))
+				{
+					smallest = false ;
+					prev = cur;
+					cur = cur->right ;
+				}
+				else if (key_comp(key.first, (cur->value).first))
+				{
+					biggest = false ;
+					prev = cur;
+					cur = cur->left ;
+				}
+				else
+				{
+					const_iterator second = const_iterator(cur, endN);
+					const_iterator first = second++;
+					return ft::pair<const_iterator, const_iterator>(first, second) ;
+				}
+			}
+			if (smallest)
+			{
+				return ft::pair<const_iterator, const_iterator>(begin(), begin()) ;
+			}
+			if (biggest)
+			{
+				return ft::pair<const_iterator, const_iterator>(end(), end()) ;
+			}
+			const_iterator	prevIter(prev, endN);
+			if (key_comp((prev->value).first, key.first))
+				prevIter++;
+			return ft::pair<const_iterator, const_iterator>(prevIter, prevIter) ;
+		}
+		
+		iterator lower_bound( const T& key )
+		{
+			Node*	cur = root ;
+			Node*	prev = cur;
+			bool	biggest = true ;
+			bool	smallest = true ;
+			while (cur != endN)
+			{
+				// std::cout << "this Node : " << cur->value << "//\n";
+				if (key_comp((cur->value).first, key.first))
+				{
+					smallest = false ;
+					prev = cur;
+					cur = cur->right ;
+				}
+				else if (key_comp(key.first, (cur->value).first))
+				{
+					biggest = false ;
+					prev = cur;
+					cur = cur->left ;
+				}
+				else
+				{
+					return	iterator(cur, endN) ;
+				}
+			}
+			if (smallest)
+			{
+				return begin() ;
+			}
+			if (biggest)
+			{
+				return end() ;
+			}
+			iterator	prevIter(prev, endN);
+			if (key_comp((prev->value).first, key.first))
+				prevIter++;
+			return prevIter ;
+		}
+
+		const_iterator lower_bound( const T& key ) const
+		{
+			Node*	cur = root ;
+			Node*	prev = cur;
+			bool	biggest = true ;
+			bool	smallest = true ;
+			while (cur != endN)
+			{
+				// std::cout << "this Node : " << cur->value << "//\n";
+				if (key_comp((cur->value).first, key.first))
+				{
+					smallest = false ;
+					prev = cur;
+					cur = cur->right ;
+				}
+				else if (key_comp(key.first, (cur->value).first))
+				{
+					biggest = false ;
+					prev = cur;
+					cur = cur->left ;
+				}
+				else
+				{
+					return	const_iterator(cur, endN) ;
+				}
+			}
+			if (smallest)
+			{
+				return begin() ;
+			}
+			if (biggest)
+			{
+				return end() ;
+			}
+			const_iterator	prevIter(prev, endN);
+			if (key_comp((prev->value).first, key.first))
+				prevIter++;
+			return prevIter ;
+		}
+		
+		iterator upper_bound( const T& key )
+		{
+			Node*	cur = root ;
+			Node*	prev = cur;
+			bool	biggest = true ;
+			bool	smallest = true ;
+			while (cur != endN)
+			{
+				// std::cout << "this Node : " << cur->value << "//\n";
+				if (key_comp((cur->value).first, key.first))
+				{
+					smallest = false ;
+					prev = cur;
+					cur = cur->right ;
+				}
+				else if (key_comp(key.first, (cur->value).first))
+				{
+					biggest = false ;
+					prev = cur;
+					cur = cur->left ;
+				}
+				else
+				{
+					iterator	find(cur, endN);
+					find++;
+					return	find ;
+				}
+			}
+			if (smallest)
+			{
+				return begin() ;
+			}
+			if (biggest)
+			{
+				return end() ;
+			}
+			iterator	prevIter(prev, endN);
+			if (key_comp((prev->value).first, key.first))
+				prevIter++;
+			return prevIter ;
+		}
+
+		const_iterator upper_bound( const T& key ) const
+		{
+			Node*	cur = root ;
+			Node*	prev = cur;
+			bool	biggest = true ;
+			bool	smallest = true ;
+			while (cur != endN)
+			{
+				// std::cout << "this Node : " << cur->value << "//\n";
+				if (key_comp((cur->value).first, key.first))
+				{
+					smallest = false ;
+					prev = cur;
+					cur = cur->right ;
+				}
+				else if (key_comp(key.first, (cur->value).first))
+				{
+					biggest = false ;
+					prev = cur;
+					cur = cur->left ;
+				}
+				else
+				{
+					const_iterator	find(cur, endN);
+					find++;
+					return	find ;
+				}
+			}
+			if (smallest)
+			{
+				return begin() ;
+			}
+			if (biggest)
+			{
+				return end() ;
+			}
+			const_iterator	prevIter(prev, endN);
+			if (key_comp((prev->value).first, key.first))
+				prevIter++;
+			return prevIter ;
+		}
+		
 	};
 
+
+	template< class T, class Compare, class cT, class cCompare >
+	bool operator==( const binary_search_tree<T, Compare>& lhs, const binary_search_tree<cT, cCompare>& rhs )
+	{
+		if (lhs.size() != rhs.size())
+			return false ;
+		return	ft::equal(lhs.begin(), lhs.end(), rhs.begin()) ;
+	}
+	
+	template< class T, class Compare, class cT, class cCompare >
+	bool operator!=( const binary_search_tree<T, Compare>& lhs, const binary_search_tree<cT, cCompare>& rhs )
+	{
+		return !(lhs == rhs) ;
+	}
+	
+	template< class T, class Compare, class cT, class cCompare >
+	bool operator< ( const binary_search_tree<T, Compare>& lhs, const binary_search_tree<cT, cCompare>& rhs )
+	{
+		return	ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()) ;
+	}
+	
+	template< class T, class Compare, class cT, class cCompare >
+	bool operator<=( const binary_search_tree<T, Compare>& lhs, const binary_search_tree<cT, cCompare>& rhs )
+	{
+		return	!(rhs < lhs);
+	}
+	
+	template< class T, class Compare, class cT, class cCompare >
+	bool operator> ( const binary_search_tree<T, Compare>& lhs, const binary_search_tree<cT, cCompare>& rhs )
+	{
+		return	(rhs < lhs) ;
+	}
+	
+	template< class T, class Compare, class cT, class cCompare >
+	bool operator>=( const binary_search_tree<T, Compare>& lhs, const binary_search_tree<cT, cCompare>& rhs )
+	{
+		return	!( lhs < rhs ) ;
+	}
+	
 	template<typename T, typename Compare>
 	std::ostream&	operator<<(std::ostream& out, const binary_search_tree<T, Compare>& tree)
 	{
@@ -581,39 +1004,3 @@ namespace   ft
 }
 
 #endif
-
-/*
-typedef struct BinTreeNodeType
-{
-	int key;
-	struct BinTreeNodeType	*pParent;
-	struct BinTreeNodeType	*pLeftChild;
-	struct BinTreeNodeType	*pRightChild;
-} BinTreeNode;
-
-typedef struct BinTreeType
-{
-	struct BinTreeNodeType	*pRootNode;
-} BinTree;
-
-BinTree* makeBinTree(BinTreeNode rootNode);
-BinTreeNode* getRootNodeBT(BinTree* pBinTree);
-BinTreeNode* getLeftChildNodeBT(BinTreeNode* pNode);
-BinTreeNode* getRightChildNodeBT(BinTreeNode* pNode);
-
-void	print_preorder(BinTreeNode *pNode);
-void	print_inorder(BinTreeNode *pNode);
-void	print_postorder(BinTreeNode *pNode);
-
-void  insertNode(BinTreeNode *root, int key)
-
-BinTreeNode *search(BinTree *tree, int key );
-
-BinTreeNode *searchParent(BinTree *tree, int key )
-
-BinTreeNode *findMaxValue(BinTreeNode *root)
-
-BinTreeNode	*deleteNode(BinTreeNode *root, int key)
-
-
-*/
