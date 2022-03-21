@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/24 15:32:49 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/22 00:56:25 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/22 03:02:30 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,10 @@ namespace   ft
 		binary_search_tree(const binary_search_tree& copy)
 		: node_alloc(copy.node_alloc), key_comp(copy.key_comp)
 		{
+			endN = node_alloc.allocate(1);
+			node_alloc.construct(endN, Node(T(), endN, endN, endN));
+			endN->height = -1 ;
+			root = endN ;
 			*this = copy;
 		}
 		
@@ -79,20 +83,26 @@ namespace   ft
 		
 		binary_search_tree& operator=(const binary_search_tree& copy)
 		{
-			if (*this != copy)
-				copyOperator(copy.root);
+			// std::cout << "start BST copy operator\n";
+			if (*this == copy)
+				return *this ;
+			clear();
+			insert(copy.begin(), copy.end());
 			return *this ;
 		}
 
-		void	copyOperator(const Node* node)
+		void	swap(binary_search_tree& other)
 		{
-			if (node == endN)
-				return ;
-			insert(node->value);
-			if (node->left != endN)
-				copyOperator(node->left);
-			if (node->right != endN)
-				copyOperator(node->right);
+			Node*	tmp_root = other.root;
+			Node*	tmp_endN = other.endN;
+			size_type	tmp_len = other.len;
+
+			other.root = this->root ;
+			other.endN = this->endN ;
+			other.len = this->len ;
+			this->root = tmp_root ;
+			this->endN = tmp_endN ;
+			this->len = tmp_len ;
 		}
 
 		Node*		beginNode() const

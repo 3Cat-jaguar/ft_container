@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:44:11 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/21 22:22:44 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/22 03:40:55 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,10 @@ namespace	ft
 		}
 		
 		map( const map& copy )
-		: alloc(copy.alloc), comp(copy.comp), tree(copy.tree)
-		{}
+		: alloc(copy.alloc), comp(copy.comp)
+		{
+			tree = copy.tree;
+		}
 		
 		~map()
 		{
@@ -231,9 +233,7 @@ namespace	ft
 		
 		void swap( map& other )
 		{
-			ft::binary_search_tree<value_type>	tmp(tree) ;
-			tree = other.tree ;
-			other.tree = tmp ;
+			tree.swap(other.tree);
 		}
 		
 		size_type count( const Key& key ) const
@@ -333,7 +333,10 @@ namespace	ft
 	}
 	
 	template< class Key, class T, class Compare, class Alloc >
-	void swap( ft::map<Key,T,Compare,Alloc>& lhs, ft::map<Key,T,Compare,Alloc>& rhs );
+	void swap( ft::map<Key,T,Compare,Alloc>& lhs, ft::map<Key,T,Compare,Alloc>& rhs )
+	{
+		lhs.swap(rhs);
+	}
 
 }
 
