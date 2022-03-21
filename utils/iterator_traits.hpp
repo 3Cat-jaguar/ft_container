@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:47:27 by ylee              #+#    #+#             */
-/*   Updated: 2022/02/18 15:39:14 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/21 23:32:05 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define ITERATORS_TRAITS_HPP
 
 # include <cstddef>
+# include <iostream>
 
 namespace	ft
 {
@@ -50,13 +51,30 @@ namespace	ft
 	typename Iter::difference_type	distance(const Iter& lhs, const Iter& rhs)
 	{
 		typename Iter::difference_type result = 0;
-		Iter	start(lhs);
-		while (start != rhs)
+		if (lhs < rhs)
 		{
-			start++;
-			result++;
+			Iter	start(lhs);
+			// std::cout << "lhs : " << *lhs << ", rhs : " << *rhs << std::endl;
+			while (start != rhs)
+			{
+				// std::cout << "start : " << *start << std::endl;
+				start++;
+				result++;
+			}
+			return result ;	
 		}
-		return result ;
+		else
+		{
+			Iter	start(rhs);
+			// std::cout << "lhs : " << *lhs << ", rhs : " << *rhs << std::endl;
+			while (start != lhs)
+			{
+				// std::cout << "start : " << *start << std::endl;
+				start++;
+				result++;
+			}
+			return -result ;	
+		}
 	}
 	
 	template <typename T>
