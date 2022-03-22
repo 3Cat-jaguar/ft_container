@@ -6,21 +6,25 @@
 /*   By: ylee <ylee@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 18:33:42 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/22 17:24:56 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/23 01:48:45 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <utility>
 #include <string>
 #include <iostream>
-#define TYPE_NAMESPACE std
-
-#if TYPE_NAMESPACE == std
-	#include <map>
-#else
-	#include "map.hpp"
-	#include "./utils/binary_search_tree.hpp"
+#if TYPE == 2
+#ifndef TYPE_NAMESPACE
+#define TYPE_NAMESPACE ft
 #endif
+#include "map.hpp"
+#elif TYPE == 1
+#ifndef TYPE_NAMESPACE
+#define TYPE_NAMESPACE std
+#endif
+#include <map>
+#endif
+
 
 
 void	test_map()

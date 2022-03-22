@@ -1,13 +1,16 @@
 #include <iostream>
 #include <string>
-#define TYPE_NAMESPACE std
-
-#if TYPE_NAMESPACE == std
-	#include <stack>
-#else
-	#include "stack.hpp"
+#if TYPE == 2
+#ifndef TYPE_NAMESPACE
+#define TYPE_NAMESPACE ft
 #endif
-
+#include "stack.hpp"
+#elif TYPE == 1
+#ifndef TYPE_NAMESPACE
+#define TYPE_NAMESPACE std
+#endif
+#include <stack>
+#endif
 
 void    test_stack(void)
 {

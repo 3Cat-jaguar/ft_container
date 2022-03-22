@@ -1,20 +1,71 @@
 #include <iostream>
-
-#define TYPE_NAMESPACE std
-
-#if TYPE_NAMESPACE == std
-	#include <vector>
-#else
-	#include "vector.hpp"
+#if TYPE == 2
+#ifndef TYPE_NAMESPACE
+#define TYPE_NAMESPACE ft
 #endif
+#include "vector.hpp"
+#elif TYPE == 1
+#ifndef TYPE_NAMESPACE
+#define TYPE_NAMESPACE std
+#endif
+#include <vector>
+#endif
+
+template <typename T>
+void	printVector(TYPE_NAMESPACE::vector<T>& vec, bool isConst = true, bool isRev = false)
+{
+	std::cout << "size : " << vec.size() << std::endl;
+	std::cout << "capacity : " << vec.capacity() << std::endl;
+	std::cout << "max_size : " << vec.max_size() << std::endl;
+
+	if (isConst == false && isRev == false)
+	{
+		typename TYPE_NAMESPACE::vector<T>::iterator it = vec.begin();
+		typename TYPE_NAMESPACE::vector<T>::iterator ite = vec.end();
+		std::cout << "Content is:" << std::endl;
+		for (; it != ite; ++it)
+			std::cout << *it << " , ";
+		std::cout << " //end\n";
+		std::cout << "###############################################\n" << std::endl;
+	}
+	else if (isConst == true && isRev == false)
+	{
+		typename TYPE_NAMESPACE::vector<T>::const_iterator it = vec.begin();
+		typename TYPE_NAMESPACE::vector<T>::const_iterator ite = vec.end();
+		std::cout << "Content is:" << std::endl;
+		for (; it != ite; ++it)
+			std::cout << *it << " , ";
+		std::cout << " //end\n";
+		std::cout << "###############################################\n" << std::endl;
+	}
+	else if (isConst == false && isRev == true)
+	{
+		typename TYPE_NAMESPACE::vector<T>::reverse_iterator it = vec.rbegin();
+		typename TYPE_NAMESPACE::vector<T>::reverse_iterator ite = vec.rend();
+		std::cout << "Content is:" << std::endl;
+		for (; it != ite; ++it)
+			std::cout << *it << " , ";
+		std::cout << " //end\n";
+		std::cout << "###############################################\n" << std::endl;
+	}
+	else
+	{
+		typename TYPE_NAMESPACE::vector<T>::const_reverse_iterator it = vec.rbegin();
+		typename TYPE_NAMESPACE::vector<T>::const_reverse_iterator ite = vec.rend();
+		std::cout << "Content is:" << std::endl;
+		for (; it != ite; ++it)
+			std::cout << *it << " , ";
+		std::cout << " //end\n";
+		std::cout << "###############################################\n" << std::endl;
+	}
+}
 
 void test_vector()
 {
 
 	// vector test command
 	TYPE_NAMESPACE::vector<int> origin;
-	"origin can alloc max_size : " << origin.max_size() << " //\n";
-	std::cout << "-------\n";
+	printVector(origin);
 
 	if (origin.empty())
 		std::cout << "   > origin is empty\n";
@@ -30,19 +81,7 @@ void test_vector()
 
 		std::cout << "-------\n";
 	}
-	TYPE_NAMESPACE::vector<int>::iterator first2 = origin.begin();
-	TYPE_NAMESPACE::vector<int>::iterator last2 = origin.end();
-
-	std::cout << ">>use origin iterator<<\n";
-	while (first2 != last2)
-	{
-		std::cout << *first2 << ", ";
-		first2++;
-	}
-	std::cout << "end\n";
-	std::cout << "-------\n";
-
-
+	printVector(origin);
 
 	std::cout << ">>check empty vector<<\n";
 	if (origin.empty())
@@ -51,17 +90,8 @@ void test_vector()
 		std::cout << "   > origin is not empty\n";
 	std::cout << "-------\n";
 
-	TYPE_NAMESPACE::vector<int>::reverse_iterator first1 = origin.rbegin();
-	TYPE_NAMESPACE::vector<int>::reverse_iterator last1 = origin.rend();
-
 	std::cout << ">>use origin reverse iterator<<\n";
-	while (first1 != last1)
-	{
-		std::cout << *first1 << ", ";
-		first1++;
-	}
-	std::cout << "end\n";
-	std::cout << "-------\n";
+	printVector(origin, true, true);
 
 	std::cout << ">>change 3rd element and check in vectors<<\n";
 	std::cout << "origin's 2nd, 3rd, 4th element : "
@@ -69,290 +99,93 @@ void test_vector()
 	std::cout << "  > origin's 4th element change to 24\n";
 	origin[3] = 24 ;
 	std::cout << "check changed 4th element\n";
-	std::cout << origin.at(3) << " // \n";
-	std::cout << "-------\n";
+	printVector(origin);
 
 	std::cout << ">>copy origin to copyVec<<\n";
+
 	TYPE_NAMESPACE::vector<int> copyVec(origin);
-	std::cout << "-------\n";
+	std::cout << "[[copyVec]]\n";
+	printVector(copyVec);
 	
 	std::cout << ">>test pop_back<<\n";
 
 	for (int i = 0; i < 2; i++)
 	{
-		copyVec.pop_back();
-		std::cout << "copyVec pop_back "<< std::endl;
-		std::cout << "copyVec size : " << copyVec.size() << ", cap : " << copyVec.capacity() << " //\n";
 		origin.pop_back();
-		std::cout << "origin pop_back " << std::endl;
+		std::cout << i + 1 << ") origin pop_back \n";
 		std::cout << "origin size : " << origin.size() << ", cap : " << origin.capacity() << " //\n";
-
-		std::cout << "-------\n";
 	}
+	std::cout << "[[poped origin]]\n";
+	printVector(origin);
+	std::cout << "[[unpoped copyVec]]\n";
+	printVector(copyVec);
 
-	std::cout << ">>test swap : myvec(unpoped) <-> copyVec(poped) <<\n";
-	std::cout << "\tbefore swap\n";
-	first2 = origin.begin();
-	last2 = origin.end();
-
-	std::cout << ">>use origin iterator<<\n";
-	while (first2 != last2)
-	{
-		std::cout << *first2 << ", ";
-		first2++;
-	}
-	std::cout << "end\n";
-
-	first2 = copyVec.begin();
-	last2 = copyVec.end();
-	std::cout << ">>use copyVec iterator<<\n";
-	while (first2 != last2)
-	{
-		std::cout << *first2 << ", ";
-		first2++;
-	}
-	std::cout << "end\n";
-
+	std::cout << ">>test swap : origin(poped) <-> copyVec(unpoped) <<\n";
 	origin.swap(copyVec);
-
 	std::cout << "\tafter swap\n";
-	first2 = origin.begin();
-	last2 = origin.end();
-
-	std::cout << ">>use origin iterator<<\n";
-	while (first2 != last2)
-	{
-		std::cout << *first2 << ", ";
-		first2++;
-	}
-	std::cout << "end\n";
-
-	first2 = copyVec.begin();
-	last2 = copyVec.end();
-	std::cout << ">>use copyVec iterator<<\n";
-	while (first2 != last2)
-	{
-		std::cout << *first2 << ", ";
-		first2++;
-	}
-	std::cout << "end\n";
-
-	std::cout << "-------\n";
-
-	first2 = origin.begin();
-	last2 = origin.end();
-
-	std::cout << ">>use origin iterator<<\n";
-	while (first2 != last2)
-	{
-		std::cout << *first2 << ", ";
-		first2++;
-	}
-	std::cout << "end\n";
-	std::cout << ">>use myvec in after pop elements<<\n";
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-	std::cout << ">>use copyVec in before pop elements<<\n";
-	while (first4 != last4)
-	{
-		std::cout << *first4 << ", ";
-		first4++;
-	}
-	std::cout << "end\n";
-	std::cout << "-------\n";
+	std::cout << "[[origin]]\n";
+	printVector(origin);
+	std::cout << "[[copyVec]]\n";
+	printVector(copyVec);
+	
 
 	std::cout << ">>test resize & reserve<<\n";
-	std::cout << "  > myvec size : " << myvec.size() << " -> 4 use resize //\n";
-	myvec.resize(4);
-	std::cout << "myvec size : " << myvec.size() << " , cap : " << myvec.capacity() << " //\n";
-	first3 = myvec.begin();
-	last3 = myvec.end();
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-	std::cout << "  > myvec size : " << myvec.size() << " -> 20 use resize //\n";
-	myvec.resize(20, 42);
-	std::cout << "myvec size : " << myvec.size() << " , cap : " << myvec.capacity() << " //\n";
-	first3 = myvec.begin();
-	last3 = myvec.end();
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
+	std::cout << "\t> origin size : " << origin.size() << " -> 6 use resize //\n";
+	origin.resize(6);
+	std::cout << "[[after resize]]\n";
+	printVector(origin);
+	std::cout << "\t> copyVec size : " << copyVec.size() << " -> 15 use resize //\n";
+	copyVec.resize(15, 42);
+	std::cout << "[[after resize]]\n";
+	printVector(copyVec);
 	std::cout << "\n";
-	std::cout << "  > myvec size : " << myvec.size() << " -> 2 use reserve //\n";
-	myvec.reserve(2);
-	std::cout << "myvec size : " << myvec.size() << " , cap : " << myvec.capacity() << " //\n";
-	first3 = myvec.begin();
-	last3 = myvec.end();
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-	std::cout << "  > myvec size : " << myvec.size() << " -> 36 use reserve //\n";
-	myvec.reserve(36);
-	std::cout << "myvec size : " << myvec.size() << " , cap : " << myvec.capacity() << " //\n";
-	first3 = myvec.begin();
-	last3 = myvec.end();
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-	std::cout << "-------\n";
+	std::cout << "\t> copyVec size : " << copyVec.size() << " -> 2 use reserve //\n";
+	copyVec.reserve(2);
+	std::cout << "[[after reserve]]\n";
+	printVector(copyVec);
+	std::cout << "\t> copyVec size : " << copyVec.size() << " -> 36 use reserve //\n";
+	copyVec.reserve(36);
+	std::cout << "[[after reserve]]\n";
+	printVector(copyVec);
 
 	std::cout << ">>copyVec erase 2nd ~ 5th elements<<\n";
-	first3 = copyVec.begin();
-	last3 = copyVec.end();
-	std::cout << "before erase : ";
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
+	
 	copyVec.erase(copyVec.begin()+1,copyVec.begin()+5);
-	first3 = copyVec.begin();
-	last3 = copyVec.end();
-	std::cout << "after erase : ";
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-	std::cout << "-------\n";
+	std::cout << "[[after erase]]\n";
+	printVector(copyVec);
 
-	std::cout << ">>insert many elements at once<<\n";
-	first3 = copyVec.begin();
-	last3 = copyVec.end();
-	std::cout << "before insert : ";
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-	copyVec.insert(copyVec.begin()+1, static_cast<ft::vector<int>::size_type>(3), 10);
-	first3 = copyVec.begin();
-	last3 = copyVec.end();
-	std::cout << "after insert : ";
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-	std::cout << "-------\n";
+	std::cout << ">>insert 3 elements after 3rd element at once <<\n";
+	copyVec.insert(copyVec.begin()+3, static_cast<TYPE_NAMESPACE::vector<int>::size_type>(3), 10);
+	std::cout << "[[after insert]]\n";
+	printVector(copyVec);
 
-	std::cout << ">>insert origin's 3 elements use reverse_iterator<<\n";
-	first2 = origin.begin();
-	last2 = origin.end();
-	std::cout << "origin vec : ";
-	while (first2 != last2)
-	{
-		std::cout << *first2 << ", ";
-		first2++;
-	}
-	std::cout << "end\n";
-	first3 = copyVec.begin();
-	last3 = copyVec.end();
-	std::cout << "before insert : ";
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-	//insert elements
-	first1 = origin.rbegin() + 1; // 6
-	last1 = origin.rbegin() + 4; // 3
-	//insert 6, 5, 4
-	copyVec.insert(copyVec.begin() + 2, first1, last1);
-	first3 = copyVec.begin();
-	last3 = copyVec.end();
-	std::cout << "after insert : ";
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-	std::cout << "-------\n";
+	std::cout << ">>insert copyVec's 3 elements use reverse_iterator in origin<<\n";
+	std::cout << "[[before insert]] - origin\n";
+	printVector(origin);
+	std::cout << "[[before insert]] - copyVec\n";
+	printVector(copyVec);
+	std::cout << "\tinsert copyVec's 6th ~ 9th element to origin 2nd position by reverse order\n";
+	TYPE_NAMESPACE::vector<int>::const_reverse_iterator	first = copyVec.rbegin() + 5;
+	TYPE_NAMESPACE::vector<int>::const_reverse_iterator	last = copyVec.rbegin() + 9;
+	
+	origin.insert(origin.begin() + 2, first, last);
+	std::cout << "[[after insert]] - origin\n";
+	printVector(origin);
 
+	std::cout << ">>assign origin 3 elements, value = 42<<\n";
+	origin.assign(static_cast<size_t>(3), 42);
+	std::cout << "[[after assign]]\n";
+	printVector(origin);
 
-	std::cout << ">>assign myvec 3 elements, value = 10<<\n";
-	first3 = myvec.begin();
-	last3 = myvec.end();
-	std::cout << "before assign : ";
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-	std::cout << "myvec size : " << myvec.size() << " , cap : " << myvec.capacity() << " //\n";
-	myvec.assign(static_cast<size_t>(3), 10);
-	first3 = myvec.begin();
-	last3 = myvec.end();
-	std::cout << "after assign : ";
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-	std::cout << "myvec size : " << myvec.size() << " , cap : " << myvec.capacity() << " //\n";
-	std::cout << "-------\n";
-
-
-	std::cout << ">>assign copyVec origin's first 5 elements<<\n";
-	first2 = origin.begin();
-	last2 = origin.end();
-	std::cout << "origin vec : ";
-	while (first2 != last2)
-	{
-		std::cout << *first2 << ", ";
-		first2++;
-	}
-	std::cout << "end\n";
-	first3 = copyVec.begin();
-	last3 = copyVec.end();
-	std::cout << "before assign : ";
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-	std::cout << "copyVec size : " << copyVec.size() << " , cap : " << copyVec.capacity() << " //\n";
-	copyVec.assign(origin.begin(), origin.begin()+5);
-	first3 = copyVec.begin();
-	last3 = copyVec.end();
-	std::cout << "after assign : ";
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-	std::cout << "copyVec size : " << copyVec.size() << " , cap : " << copyVec.capacity() << " //\n";
-	std::cout << "-------\n";
-
+	std::cout << ">>assign origin copyVec's first 5 elements<<\n";
+	std::cout << "[[before assign]] - copyVec\n";
+	printVector(copyVec);
+	origin.assign(copyVec.begin(), copyVec.begin()+5);
+	std::cout << "[[after assign]] - origin\n";
+	printVector(origin);
+	
 	std::cout << ">>test front, back element<<\n";
-	std::cout << "myvec.front() : " << myvec.front() << " , copyVec.back() : " << copyVec.back() << " // \n";
+	std::cout << "origin.front() : " << origin.front() << " , origin.back() : " << origin.back() << " // \n";
 	std::cout << "-------\n";
 
 	std::cout << ">>test call element storage use data()<<\n";
@@ -364,64 +197,25 @@ void test_vector()
 	std::cout << "-------\n";
 
 	std::cout << ">>test non-member function swap<<\n";
-	std::cout << "   > before swap\n";
-	std::cout << "myvec : ";
-	first3 = myvec.begin();
-	last3 = myvec.end();
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-
-	std::cout << "copyVec : ";
-	first3 = copyVec.begin();
-	last3 = copyVec.end();
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-
-	ft::swap(myvec, copyVec);
-
-	std::cout << "   > after swap\n";
-	std::cout << "myvec : ";
-	first3 = myvec.begin();
-	last3 = myvec.end();
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-
-	std::cout << "copyVec : ";
-	first3 = copyVec.begin();
-	last3 = copyVec.end();
-	while (first3 != last3)
-	{
-		std::cout << *first3 << ", ";
-		first3++;
-	}
-	std::cout << "end\n";
-	std::cout << "-------\n";
+	TYPE_NAMESPACE::swap(origin, copyVec);
+	std::cout << "[[after swap]] - origin\n";
+	printVector(origin);
+	std::cout << "[[after swap]] - copyVec\n";
+	printVector(copyVec);
 
 	std::cout << ">>test non-member operators<<\n";
-	std::cout << "\"myvec\"";
-	if (myvec == copyVec)
+	std::cout << "\"origin\"";
+	if (origin == copyVec)
 		std::cout << " == ";
-	if (myvec != copyVec)
+	if (origin != copyVec)
 		std::cout << " != ";
-	if (myvec < copyVec)
+	if (origin < copyVec)
 		std::cout << " < ";
-	if (myvec <= copyVec)
+	if (origin <= copyVec)
 		std::cout << " <= ";	
-	if (myvec > copyVec)
+	if (origin > copyVec)
 		std::cout << " > ";
-	if (myvec > copyVec)
+	if (origin > copyVec)
 		std::cout << " >= ";
 	std::cout << "\"copyVec\"\n";
 	std::cout << "-------\n";
@@ -429,22 +223,17 @@ void test_vector()
 
 	std::cout << ">>clear vectors<<\n";
 	origin.clear();
-	myvec.clear();
 	copyVec.clear();
 
 	std::cout << ">>check empty vector<<\n";
-	if (myvec.empty())
-		std::cout << "   > myvec is empty\n";
-	else
-		std::cout << "   > myvec is not empty\n";
-	if (copyVec.empty())
-		std::cout << "   > copyVec is empty\n";
-	else
-		std::cout << "   > copyVec is not empty\n";
 	if (origin.empty())
 		std::cout << "   > origin is empty\n";
 	else
 		std::cout << "   > origin is not empty\n";
+	if (copyVec.empty())
+		std::cout << "   > copyVec is empty\n";
+	else
+		std::cout << "   > copyVec is not empty\n";
 	std::cout << "-------\n";
 	
 	return ;

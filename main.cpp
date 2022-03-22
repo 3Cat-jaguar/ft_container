@@ -1,24 +1,23 @@
 #include <iostream>
 #include <chrono>
 #include "test_funcs.hpp"
-#define TYPE_NAMESPACE
-#ifdef TYPE_NAMESPACE == std
-	#include <map>
-	#include <stack>
-	#include <vector>
-#else
-	#include "map.hpp"
-	#include "stack.hpp"
-	#include "vector.hpp"
+#ifndef TYPE
+#define TYPE    2
+#endif
+#if TYPE == 2
+#define TYPE_NAMESPACE ft
+#elif TYPE == 1
+#define TYPE_NAMESPACE std
 #endif
 
 int main(void)
 {
     std::chrono::system_clock::time_point	start = std::chrono::system_clock::now();
-    if (TYPE_NAMESPACE == 1)
+    #if TYPE == 1
         std::cout << ">>this test is STL<<\n\n";
-    else
+    #elif TYPE == 2
         std::cout << ">>this test is my containers<<\n\n";
+    #endif
     std::cout << "===== test vector =====\n";
     test_vector();
     std::cout << "\n===== test stack =====\n";
