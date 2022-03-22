@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   map.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: ylee <ylee@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:44:11 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/22 03:40:55 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/22 16:12:47 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,20 +47,16 @@ namespace	ft
 		typedef typename ft::reverse_iterator<iterator>						reverse_iterator;
 		typedef typename ft::reverse_iterator<const_iterator>				const_reverse_iterator;
 	
-		//ft::pair 구조체 두개를 받아 둘의 key 를 비교하는 클래스. key 를 인자로 받아 비교하는 것은 ft::less<key> 에서 처리하고 구조체를 받아 비교할 때에는 이 클래스에서 처리한다.
 		class value_compare
 		: ft::binary_function<value_type, value_type, bool>
 		{
 		protected:
 			Compare		comp; // ft::less<Key> 을 저장한다.
 			value_compare(Compare c) : comp(c) {}
-			// ~value_compare(){}
 		public:
 			value_compare() {}
 			bool    operator()(const value_type& lhs, const value_type& rhs)
 			{
-				//pair 구조체를 받은 뒤 ft::less<Key> 에서 lhs, rhs 의 key 값을 비교한다.
-				//pair 는 struct 이므로 first 는 public 이다.
 				return comp(lhs.first, rhs.first); 
 			}
 		};
@@ -68,7 +64,7 @@ namespace	ft
 	private:
 		allocator_type			alloc;
 		key_compare				comp;
-	public:
+	// public:
 		ft::binary_search_tree<value_type, Compare>    tree;
 
 	public:

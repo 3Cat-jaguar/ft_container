@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   iterator_traits.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: ylee <ylee@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:47:27 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/21 23:32:05 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/22 16:20:45 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,8 @@ namespace	ft
 		if (lhs < rhs)
 		{
 			Iter	start(lhs);
-			// std::cout << "lhs : " << *lhs << ", rhs : " << *rhs << std::endl;
 			while (start != rhs)
 			{
-				// std::cout << "start : " << *start << std::endl;
 				start++;
 				result++;
 			}
@@ -66,10 +64,8 @@ namespace	ft
 		else
 		{
 			Iter	start(rhs);
-			// std::cout << "lhs : " << *lhs << ", rhs : " << *rhs << std::endl;
 			while (start != lhs)
 			{
-				// std::cout << "start : " << *start << std::endl;
 				start++;
 				result++;
 			}

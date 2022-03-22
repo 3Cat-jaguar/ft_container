@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pair.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: ylee <ylee@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:51:45 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/15 00:30:14 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/22 16:22:27 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,7 @@ namespace	ft
 		pair( const first_type& x = first_type(), const second_type& y = second_type())
 		: first(x), second(y)
 		{}
-		
-		// template <typename U1, typename U2>
-		// pair( const pair<U1, U2>& p)
-		// {
-		// 	first = static_cast<first_type>(p.first);
-		// 	second = static_cast<second_type>(p.second);
-		// }
+
 		template <typename U1, typename U2>
 		pair( const pair<U1, U2>& p)
 		:first(p.first), second(p.second)
@@ -82,7 +76,6 @@ namespace	ft
 	template <typename T1, typename T2>
 	std::ostream&	operator<<(std::ostream& out, const pair<T1, T2>& p)
 	{
-		// out << "this pair Key : " << p.first << " , Mapping : " << p.second;
 		out << "[ " << p.first << " : " << p.second << " ]";
 		return out ;
 	}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   vector.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: ylee <ylee@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:44:11 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/21 01:07:00 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/22 16:10:13 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,6 @@ namespace	ft
 		}
 		void reserve( size_type new_cap )
 		{
-//			std::cout << ">> here is reserve<< this : << " << cap << " , new : " << new_cap << "//\n";
 			if (new_cap <= cap)
 				return ;
 			if (max_size() < new_cap)
@@ -287,9 +286,6 @@ namespace	ft
 		void assign( InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = nullptr )
 		{
 			clear() ;
-			// size_type	count = 0;
-			// for (InputIt tmp = first; tmp != last; tmp++, count++)
-			// 	;
 			difference_type diff = ft::distance<InputIt>(first, last);
 			size_type	count = static_cast<size_type>(diff);
 			if (cap < count)
@@ -314,11 +310,6 @@ namespace	ft
 		}
 		void push_back( const T& value )
 		{
-			// if (len + 1 > cap)
-			// {
-			// 	size_type	new_cap = (cap * 2 > 0) ? (cap * 2) : 1;
-			// 	this->reserve(new_cap);
-			// }
 			insert(end(), value);
 		}
 		void pop_back()
@@ -330,7 +321,6 @@ namespace	ft
 		iterator insert( iterator pos, const T& value )
 		{
 			difference_type	diff = pos.base() - start;
-//			std::cout << ">> here is insert<<\n";
 			if (size() + 1 > cap)
 			{
 				size_type	new_cap = (cap * 2 > 0) ? (cap * 2) : 1;
@@ -354,7 +344,6 @@ namespace	ft
 		void insert( iterator pos, size_type count, const T& value )
 		{
 			difference_type	diff = pos.base() - start;
-//			std::cout << ">> here is insert<<\n";
 			while (size() + count > cap)
 			{
 				size_type	new_cap = (cap * 2 > 0) ? (cap * 2) : 1;
@@ -563,7 +552,6 @@ namespace	ft
 	{
 		vector<T, Alloc> tmp(rhs);
 		tmp.swap(lhs);
-		tmp.swap(rhs);
 	}
 }
 
