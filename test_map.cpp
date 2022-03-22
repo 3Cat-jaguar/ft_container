@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   test_map.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ylee <ylee@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: ylee <ylee@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 18:33:42 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/11 00:46:09 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/22 17:24:56 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,9 @@
 #include "./utils/binary_search_tree.hpp"
 #include "map.hpp"
 
-int    main()
+void	test_map()
 {
     std::map<int, std::string>  origin;
-	ft::binary_search_tree<int> BST_test;
-	// ft::binary_search_tree< ft::pair<int, std::string>, ft::map<int, std::string>::value_compare > pair_test;
 	ft::map<int, std::string> map_test ;
 	
 	std::pair<int, std::string> test1(5, "test1");
@@ -53,18 +51,8 @@ int    main()
 	map_test.insert(ft_test5) ;
 	map_test.insert(ft_test6) ;
 	
-	BST_test.insert(5);
-	BST_test.insert(3);
-	BST_test.insert(4);
-	BST_test.insert(8);
-	BST_test.insert(6);
-	BST_test.insert(7);
-	
 	std::map<int, std::string>::iterator	i1 = origin.begin();
 	std::map<int, std::string>::iterator	f1 = origin.end();
-
-	ft::binary_search_tree<int>::iterator	i2 = BST_test.begin();
-	ft::binary_search_tree<int>::iterator	f2 = BST_test.end();
 	
 	ft::map<int, std::string>::iterator i3 = map_test.begin();
 	ft::map<int, std::string>::iterator f3 = map_test.end();
@@ -79,14 +67,6 @@ int    main()
 	}
 	std::cout << " // end\n" ;
 	
-	std::cout << "BST test : " ;
-	while (i2 != f2)
-	{
-		std::cout << *i2 ;
-		std::cout << " , " ;
-		i2++;
-	}
-	std::cout << " // end\n" ;
 
 	std::cout << "map test : \n" ;
 	while (i3 != f3)
@@ -97,11 +77,8 @@ int    main()
 	}
 	std::cout << " // end\n" ;
 
-	std::cout << "BST_test find 6\n";
-	std::cout << *(BST_test.find(6)) << std::endl;
 
 	std::cout << "map_test find 7\n";
 	std::cout << *(map_test.find(7)) << std::endl;
 	
-    return 0;
 }

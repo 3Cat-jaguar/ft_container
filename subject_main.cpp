@@ -1,16 +1,14 @@
 #include <iostream>
 #include <string>
 #include <deque>
-#if 1 //CREATE A REAL STL EXAMPLE
-	#include <map>
-	#include <stack>
-	#include <vector>
-	namespace ft = std;
-#else
-	#include <map.hpp>
-	#include <stack.hpp>
-	#include <vector.hpp>
-#endif
+// 	#include <map>
+// 	#include <stack>
+// 	#include <vector>
+// 	namespace ft = std;
+
+#include "map.hpp"
+#include "stack.hpp"
+#include "vector.hpp"
 
 #include <stdlib.h>
 
@@ -85,7 +83,7 @@ int main(int argc, char** argv) {
 	}
 	catch(const std::exception& e)
 	{
-		//NORMAL ! :P
+		std::cout << "exception ~~ catch~~\n";//NORMAL ! :P
 	}
 	
 	for (int i = 0; i < COUNT; ++i)
