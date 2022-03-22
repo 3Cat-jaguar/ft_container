@@ -13,8 +13,6 @@
 #ifndef STD_PAIR_HPP
 # define STD_PAIR_HPP
 
-# include <iostream>
-
 namespace	ft
 {
 	template<typename T1, typename T2>
@@ -73,12 +71,6 @@ namespace	ft
 	bool operator>= (const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
 	{ return !(lhs<rhs) ; }
 
-	template <typename T1, typename T2>
-	std::ostream&	operator<<(std::ostream& out, const pair<T1, T2>& p)
-	{
-		out << "[ " << p.first << " : " << p.second << " ]";
-		return out ;
-	}
 }
 
 #endif

@@ -21,6 +21,9 @@ SRC = main.cpp\
 
 OBJ = $(SRC:.cpp=.o)
 
+NAMESPACE = -DTYPE_NAMESPACE=std
+#NAMESPACE = -DTYPE_NAMESPACE=ft
+
 all: $(NAME)
 
 $(NAME):$(OBJ)

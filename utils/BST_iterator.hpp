@@ -13,7 +13,6 @@
 #ifndef BST_ITERATOR_HPP
 # define BST_ITERATOR_HPP
 
-# include <iostream>
 # include "./less.hpp"
 # include "./iterator_traits.hpp"
 

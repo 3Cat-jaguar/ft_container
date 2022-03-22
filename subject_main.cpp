@@ -1,14 +1,16 @@
 #include <iostream>
 #include <string>
 #include <deque>
-// 	#include <map>
-// 	#include <stack>
-// 	#include <vector>
-// 	namespace ft = std;
-
-#include "map.hpp"
-#include "stack.hpp"
-#include "vector.hpp"
+#if TYPE_NAMESPACE == std //CREATE A REAL STL EXAMPLE
+	#include <map>
+	#include <stack>
+	#include <vector>
+	namespace ft = std;
+#else
+	#include <map.hpp>
+	#include <stack.hpp>
+	#include <vector.hpp>
+#endif
 
 #include <stdlib.h>
 
@@ -20,6 +22,7 @@ struct Buffer
 	char buff[BUFFER_SIZE];
 };
 
+#include <chrono>
 
 #define COUNT (MAX_RAM / (int)sizeof(Buffer))
 
@@ -50,6 +53,7 @@ int main(int argc, char** argv) {
 		std::cerr << "Count value:" << COUNT << std::endl;
 		return 1;
 	}
+	 std::chrono::system_clock::time_point	start = std::chrono::system_clock::now();
 	const int seed = atoi(argv[1]);
 	srand(seed);
 
@@ -110,5 +114,10 @@ int main(int argc, char** argv) {
 		std::cout << *it;
 	}
 	std::cout << std::endl;
+
+	 std::chrono::system_clock::time_point	end = std::chrono::system_clock::now();
+	 std::chrono::duration<double> diff = end - start ;
+	std::cout << "duration time : " << diff.count() << std::endl;
+
 	return (0);
 }

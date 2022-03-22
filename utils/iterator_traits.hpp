@@ -14,7 +14,6 @@
 # define ITERATORS_TRAITS_HPP
 
 # include <cstddef>
-# include <iostream>
 
 namespace	ft
 {
