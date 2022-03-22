@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:47:27 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/22 16:20:45 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/22 17:15:35 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,26 +51,13 @@ namespace	ft
 	typename Iter::difference_type	distance(const Iter& lhs, const Iter& rhs)
 	{
 		typename Iter::difference_type result = 0;
-		if (lhs < rhs)
+		Iter	start(lhs);
+		while (start != rhs)
 		{
-			Iter	start(lhs);
-			while (start != rhs)
-			{
-				start++;
-				result++;
-			}
-			return result ;	
+			start++;
+			result++;
 		}
-		else
-		{
-			Iter	start(rhs);
-			while (start != lhs)
-			{
-				start++;
-				result++;
-			}
-			return -result ;	
-		}
+		return result ;	
 	}
 	
 	template <typename T>
