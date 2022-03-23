@@ -16,10 +16,10 @@ void    test_stack(void)
 {
     std::string elemList[] = 
     {
-        "test",
-        "string",
-        "is here",
-        "now end"
+        "test1",
+        "test2",
+        "test3",
+        "test4"
     };
 
     TYPE_NAMESPACE::stack<std::string> origin;
@@ -35,6 +35,7 @@ void    test_stack(void)
     std::cout << ">>test push<<\n";
     for(int i = 0; i < 4; i++)
     {
+        std::cout << "push element : " << elemList[i] << std::endl;
         origin.push(elemList[i]);
     }
     std::cout << "origin size : " << origin.size() << " //\n";

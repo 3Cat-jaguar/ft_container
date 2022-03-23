@@ -18,11 +18,11 @@ int main(void)
     #elif TYPE == 2
         std::cout << ">>this test is my containers<<\n\n";
     #endif
-    std::cout << "===== test vector =====\n";
+    std::cout << "===== test vector =====\n\n";
     test_vector();
-    std::cout << "\n===== test stack =====\n";
+    std::cout << "\n\n===== test stack =====\n\n";
     test_stack();
-    std::cout << "\n===== test map =====\n";
+    std::cout << "\n\n===== test map =====\n\n";
     test_map();
     std::cout << "\n!!! test end\n";
     std::chrono::system_clock::time_point	end = std::chrono::system_clock::now();
