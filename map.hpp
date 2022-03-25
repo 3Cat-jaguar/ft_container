@@ -6,7 +6,7 @@
 /*   By: ylee <ylee@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 12:44:11 by ylee              #+#    #+#             */
-/*   Updated: 2022/03/22 16:12:47 by ylee             ###   ########.fr       */
+/*   Updated: 2022/03/25 22:35:43 by ylee             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,11 +50,11 @@ namespace	ft
 		class value_compare
 		: ft::binary_function<value_type, value_type, bool>
 		{
+		friend	class ft::map<Key, T, Compare, Allocator>;
 		protected:
 			Compare		comp; // ft::less<Key> 을 저장한다.
 			value_compare(Compare c) : comp(c) {}
 		public:
-			value_compare() {}
 			bool    operator()(const value_type& lhs, const value_type& rhs)
 			{
 				return comp(lhs.first, rhs.first); 
